@@ -1,7 +1,8 @@
 firefox-open-tabs-next-to-current
 =================================
 
-Open all new tabs always to the right of the current one. This doesn't include
+Open all new tabs always to the right of the current one(which is not the same
+as setting `browser.tabs.insertRelatedAfterCurrent` to true). This doesn't include
 tabs that are being restored.
 
 Feedback
