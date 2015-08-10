@@ -2,10 +2,20 @@
     "name": "opentabsnexttocurrent",
     "title": "Open Tabs Next to Current",
     "id": "opentabsnexttocurrent@sblask",
-    "description": "Open new tabs always to the right of the current one.",
+    "description": "Open new tabs to the right of the current one.",
     "author": "Sebastian Blask",
     "license": "MIT",
     "version": "1.0.1",
     "homepage": "https://github.com/sblask/firefox-open-tabs-next-to-current",
-    "permissions": {"private-browsing": true}
+    "permissions": {"private-browsing": true},
+    "preferences-branch": "opentabsnexttocurrent",
+    "preferences": [
+        {
+            "name": "enabledForButton",
+            "title": "Enabled for New Tab Button",
+            "description": "New tabs are opened to the right of the current one when opened by click on the + button in tab bar",
+            "type": "bool",
+            "value": true
+        }
+    ]
 }
