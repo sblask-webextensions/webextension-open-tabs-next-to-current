@@ -1,0 +1,11 @@
+{
+    "name": "opentabsnexttocurrent",
+    "title": "Open Tabs Next to Current",
+    "id": "opentabsnexttocurrent@sblask",
+    "description": "Open new tabs always to the right of the current one.",
+    "author": "Sebastian Blask",
+    "license": "MIT",
+    "version": "1.0.1",
+    "homepage": "https://github.com/sblask/firefox-open-tabs-next-to-current",
+    "permissions": {"private-browsing": true}
+}
