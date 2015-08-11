@@ -1,10 +1,13 @@
 firefox-open-tabs-next-to-current
 =================================
 
-Open new tabs to the right of the current one(which is not the same as setting
-`browser.tabs.insertRelatedAfterCurrent` to true). This doesn't include tabs
-that are being restored. You can also disable this for clicks on the + button
-in the tab bar(check addon preferences)
+Always open new tabs to the right of the current one(which is not the same as
+setting `browser.tabs.insertRelatedAfterCurrent` to true). You can however get
+the default behaviour by:
+
+- configuring the + button in the tab bar to not open tabs to the right of the
+  current one(see addon preferences)
+- using the `ctrl-alt-t` keyboard shortcut to open a new tab
 
 This add-on is developed using the [Mozilla Add-on
 SDK](https://developer.mozilla.org/en-US/Add-ons/SDK).
