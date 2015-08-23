@@ -14,7 +14,7 @@ tabs.on("open", helpers.maybeMoveTab);
 
 function registerListeners(window) {
     let lowLevelWindow = core.viewFor(window);
-    lowLevelWindow.addEventListener("click", helpers.doNotMoveTabIfNewTabButtonClick);
+    lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick);
 }
 
 for (let window of windows) {
