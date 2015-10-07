@@ -7,7 +7,7 @@ const helpers = require("./lib/helpers");
 
 hotkeys.Hotkey({
     combo: "accel-alt-t",
-    onPress: helpers.openNewTabAtDefaultPosition
+    onPress: helpers.openNewTabAtDefaultPosition,
 });
 
 tabs.on("open", helpers.maybeMoveTab);
@@ -20,4 +20,4 @@ function registerListeners(window) {
 for (let window of windows) {
     registerListeners(window);
 }
-windows.on('open', registerListeners);
+windows.on("open", registerListeners);
