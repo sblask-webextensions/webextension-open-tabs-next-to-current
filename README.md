@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current.svg?branch=master)](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current)
+
 firefox-open-tabs-next-to-current
 =================================
 
