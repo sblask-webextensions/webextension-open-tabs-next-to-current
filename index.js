@@ -18,10 +18,12 @@ function registerListeners(window) {
     lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
 
     lowLevelWindow.addEventListener("SSWindowStateBusy", function() { state.disableUntilEnabled(); });
+
     lowLevelWindow.addEventListener("SSWindowStateReady", function() { state.enable(); });
 }
 
 for (let window of windows) {
     registerListeners(window);
 }
+
 windows.on("open", registerListeners);
