@@ -1,5 +1,7 @@
 language: javascript
 install:
     - npm install -g eslint
+    - npm install -g jscs
 script:
     - eslint index.js lib data test
+    - jscs index.js lib
