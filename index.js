@@ -17,8 +17,8 @@ function registerListeners(window) {
     let lowLevelWindow = core.viewFor(window);
     lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
 
-    lowLevelWindow.addEventListener("SSWindowStateBusy", function(){ state.disableUntilEnabled(); });
-    lowLevelWindow.addEventListener("SSWindowStateReady", function(){ state.enable(); });
+    lowLevelWindow.addEventListener("SSWindowStateBusy", function() { state.disableUntilEnabled(); });
+    lowLevelWindow.addEventListener("SSWindowStateReady", function() { state.enable(); });
 }
 
 for (let window of windows) {
