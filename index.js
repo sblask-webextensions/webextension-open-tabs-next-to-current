@@ -6,13 +6,6 @@ const windows = require("sdk/windows").browserWindows;
 const helpers = require("./lib/helpers");
 const state = require("./lib/state");
 
-hotkeys.Hotkey({
-    combo: "accel-alt-t",
-    onPress: helpers.openNewTabAtDefaultPosition,
-});
-
-tabs.on("open", helpers.maybeMoveTab);
-
 function registerListeners(window) {
     let lowLevelWindow = core.viewFor(window);
     lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
@@ -22,8 +15,19 @@ function registerListeners(window) {
     lowLevelWindow.addEventListener("SSWindowStateReady", function() { state.enable(); });
 }
 
-for (let window of windows) {
-    registerListeners(window);
-}
+exports.main = function(options) {
+    console.log("Starting up with reason ", options.loadReason);
 
-windows.on("open", registerListeners);
+    hotkeys.Hotkey({
+        combo: "accel-alt-t",
+        onPress: helpers.openNewTabAtDefaultPosition,
+    });
+
+    tabs.on("open", helpers.maybeMoveTab);
+
+    for (let window of windows) {
+        registerListeners(window);
+    }
+
+    windows.on("open", registerListeners);
+};
