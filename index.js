@@ -52,12 +52,12 @@ exports.main = function(options) {
 exports.onUnload = function(reason) {
     console.log("Closing down with reason ", reason);
 
-    windows.off("open", registerListeners);
+    windows.removeListener("open", registerListeners);
     for (let window of windows) {
         removeListeners(window);
     }
 
-    tabs.off("open", helpers.maybeMoveTab);
+    tabs.removeListener("open", helpers.maybeMoveTab);
 
     if (hotkey) {
         hotkey.destroy();
