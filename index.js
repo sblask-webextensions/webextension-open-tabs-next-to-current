@@ -6,19 +6,36 @@ const windows = require("sdk/windows").browserWindows;
 const helpers = require("./lib/helpers");
 const state = require("./lib/state");
 
+let hotkey;
+
+function __disableUntilEnabled(_event) {
+    state.disableUntilEnabled();
+}
+
+function __enable(_event) {
+    state.enable();
+}
+
 function registerListeners(window) {
-    let lowLevelWindow = core.viewFor(window);
+    const lowLevelWindow = core.viewFor(window);
+
     lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
+    lowLevelWindow.addEventListener("SSWindowStateBusy", __disableUntilEnabled);
+    lowLevelWindow.addEventListener("SSWindowStateReady", __enable);
+}
 
-    lowLevelWindow.addEventListener("SSWindowStateBusy", function() { state.disableUntilEnabled(); });
+function removeListeners(window) {
+    const lowLevelWindow = core.viewFor(window);
 
-    lowLevelWindow.addEventListener("SSWindowStateReady", function() { state.enable(); });
+    lowLevelWindow.removeEventListener("click", helpers.maybeDisableIfNewTabButtonClick);
+    lowLevelWindow.removeEventListener("SSWindowStateBusy", __disableUntilEnabled);
+    lowLevelWindow.removeEventListener("SSWindowStateReady", __enable);
 }
 
 exports.main = function(options) {
     console.log("Starting up with reason ", options.loadReason);
 
-    hotkeys.Hotkey({
+    hotkey = hotkeys.Hotkey({
         combo: "accel-alt-t",
         onPress: helpers.openNewTabAtDefaultPosition,
     });
@@ -35,4 +52,14 @@ exports.main = function(options) {
 exports.onUnload = function(reason) {
     console.log("Closing down with reason ", reason);
 
+    windows.off("open", registerListeners);
+    for (let window of windows) {
+        removeListeners(window);
+    }
+
+    tabs.off("open", helpers.maybeMoveTab);
+
+    if (hotkey) {
+        hotkey.destroy();
+    }
 };
