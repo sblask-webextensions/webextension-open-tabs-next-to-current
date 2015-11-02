@@ -31,3 +31,8 @@ exports.main = function(options) {
 
     windows.on("open", registerListeners);
 };
+
+exports.onUnload = function(reason) {
+    console.log("Closing down with reason ", reason);
+
+};
