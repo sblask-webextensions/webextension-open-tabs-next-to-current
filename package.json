@@ -11,6 +11,11 @@
         "fennec": ">=38.0a1"
     },
     "license": "MIT",
+    "keywords": [
+        "jetpack",
+        "placement",
+        "tab"
+    ],
     "icon": "icon.png",
     "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
     "repository": {
