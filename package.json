@@ -30,7 +30,7 @@
         "placement",
         "tab"
     ],
-    "icon": "icon.png",
+    "icon": "resource://opentabsnexttocurrent-at-sblask/data/icon.png",
     "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
     "repository": {
         "type": "git",
