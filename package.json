@@ -1,13 +1,25 @@
 {
-    "name": "opentabsnexttocurrent",
     "title": "Open Tabs Next to Current",
+    "name": "opentabsnexttocurrent",
     "id": "opentabsnexttocurrent@sblask",
-    "description": "Open new tabs to the right of the current one.",
-    "author": "Sebastian Blask",
-    "license": "MIT",
     "version": "1.1.5",
-    "homepage": "https://github.com/sblask/firefox-open-tabs-next-to-current",
-    "permissions": {"private-browsing": true},
+    "description": "Open new tabs to the right of the current one.",
+    "main": "index.js",
+    "author": "Sebastian Blask",
+    "engines": {
+        "firefox": ">=38.0a1",
+        "fennec": ">=38.0a1"
+    },
+    "license": "MIT",
+    "icon": "icon.png",
+    "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
+    },
+    "permissions": {
+        "private-browsing": true
+    },
     "preferences-branch": "opentabsnexttocurrent",
     "preferences": [
         {
