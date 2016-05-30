@@ -12,7 +12,7 @@ the default behaviour by:
 - using the `ctrl-alt-t` keyboard shortcut to open a new tab
 
 This add-on is developed using the [Mozilla Add-on
-SDK](https://developer.mozilla.org/en-US/Add-ons/SDK).
+SDK](https://developer.mozilla.org/Add-ons/SDK).
 
 Feedback
 --------
