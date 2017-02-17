@@ -1,4 +1,6 @@
 language: javascript
+nodejs:
+    - "6"
 addons:
     firefox: "51.0"
 install:
@@ -7,7 +9,4 @@ before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
 script:
-#    - npm run test:travis
     - npm run lint
-nodejs:
-    - node
