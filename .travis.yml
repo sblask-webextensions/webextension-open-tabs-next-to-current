@@ -9,3 +9,5 @@ before_script:
 script:
 #    - npm run test:travis
     - npm run lint
+nodejs:
+    - node
