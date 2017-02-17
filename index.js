@@ -1,65 +1,62 @@
-const core = require("sdk/view/core");
-const hotkeys = require("sdk/hotkeys");
-const tabs = require("sdk/tabs");
-const windows = require("sdk/windows").browserWindows;
 
-const helpers = require("./lib/helpers");
-const state = require("./lib/state");
+function activatePlugin(initialActiveTabs) {
+    const lastActiveTab = new Map(initialActiveTabs.map(t => [t.windowId, t.id]));
+    const currentActiveTab = new Map(lastActiveTab);
+    //console.log("tabs loaded:", currentActiveTab);
 
-let hotkey;
-
-function __disableUntilEnabled(_event) {
-    state.disableUntilEnabled();
-}
-
-function __enable(_event) {
-    state.enable();
-}
-
-function registerListeners(window) {
-    const lowLevelWindow = core.viewFor(window);
-
-    lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
-    lowLevelWindow.addEventListener("SSWindowStateBusy", __disableUntilEnabled);
-    lowLevelWindow.addEventListener("SSWindowStateReady", __enable);
-}
-
-function removeListeners(window) {
-    const lowLevelWindow = core.viewFor(window);
-
-    lowLevelWindow.removeEventListener("click", helpers.maybeDisableIfNewTabButtonClick);
-    lowLevelWindow.removeEventListener("SSWindowStateBusy", __disableUntilEnabled);
-    lowLevelWindow.removeEventListener("SSWindowStateReady", __enable);
-}
-
-exports.main = function(options) {
-    console.log("Starting up with reason ", options.loadReason);
-
-    hotkey = hotkeys.Hotkey({
-        combo: "accel-alt-t",
-        onPress: helpers.openNewTabAtDefaultPosition,
+    browser.tabs.onActivated.addListener(({tabId, windowId}) => {
+        lastActiveTab.set(windowId, currentActiveTab.get(windowId));
+        currentActiveTab.set(windowId, tabId)
+        //console.log("onActivated", {tabId, windowId, lastActiveTab: lastActiveTab.get(windowId)});
     });
 
-    tabs.on("open", helpers.maybeMoveTab);
-
-    for (let window of windows) {
-        registerListeners(window);
+    function getNextToCurrentTabIndex(windowId) {
+        const last = lastActiveTab.get(windowId);
+        if(last === undefined) {
+            // opening new window
+            return Promise.reject("no active tab");
+        }
+        
+        return browser.tabs.get(last).then(tab => tab.index + 1);
     }
 
-    windows.on("open", registerListeners);
-};
-
-exports.onUnload = function(reason) {
-    console.log("Closing down with reason ", reason);
-
-    windows.removeListener("open", registerListeners);
-    for (let window of windows) {
-        removeListeners(window);
+    function moveTabNextToCurrent(openingTab) {
+        return getNextToCurrentTabIndex(openingTab.windowId)
+            .then(index => {
+                //console.log("New tab index: " + index);
+                return browser.tabs.move(openingTab.id, {index: index})
+            }).catch(e => {
+                if(e !== "no active tab") {
+                    throw e;
+                }
+            });
     }
 
-    tabs.removeListener("open", helpers.maybeMoveTab);
+    let enabled = true;
 
-    if (hotkey) {
-        hotkey.destroy();
-    }
-};
+    browser.tabs.onCreated.addListener(tab => {
+        //console.log("Tab created", tab);
+        if(enabled) {
+            moveTabNextToCurrent(tab);
+        }
+    });
+
+    browser.commands.onCommand.addListener(command => {
+        if(command === "open-new-default") {
+            enabled = false;
+            browser.tabs.create({}).then(() => {
+                enabled = true;
+            }).catch(e => {
+                enabled = true;
+                throw e;
+            })
+        }
+    });
+
+    browser.windows.onRemoved.addListener(windowId => {
+        lastActiveTab.delete(windowId);
+        currentActiveTab.delete(windowId);
+    });
+}
+
+browser.tabs.query({active: true}).then(activatePlugin);
