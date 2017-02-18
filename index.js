@@ -36,7 +36,7 @@ function activatePlugin(initialActiveTabs) {
 
     browser.tabs.onCreated.addListener(tab => {
         //console.log("Tab created", tab);
-        if(enabled) {
+        if(enabled && tab.active) {
             moveTabNextToCurrent(tab);
         }
     });
