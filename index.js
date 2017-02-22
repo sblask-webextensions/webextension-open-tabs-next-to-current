@@ -6,7 +6,7 @@ function activatePlugin(initialActiveTabs) {
 
     browser.tabs.onActivated.addListener(({tabId, windowId}) => {
         lastActiveTab.set(windowId, currentActiveTab.get(windowId));
-        currentActiveTab.set(windowId, tabId)
+        currentActiveTab.set(windowId, tabId);
         //console.log("onActivated", {tabId, windowId, lastActiveTab: lastActiveTab.get(windowId)});
     });
 
@@ -24,7 +24,7 @@ function activatePlugin(initialActiveTabs) {
         return getNextToCurrentTabIndex(openingTab.windowId)
             .then(index => {
                 //console.log("New tab index: " + index);
-                return browser.tabs.move(openingTab.id, {index: index})
+                return browser.tabs.move(openingTab.id, {index: index});
             }).catch(e => {
                 if(e !== "no active tab") {
                     throw e;
@@ -49,7 +49,7 @@ function activatePlugin(initialActiveTabs) {
             }).catch(e => {
                 enabled = true;
                 throw e;
-            })
+            });
         }
     });
 

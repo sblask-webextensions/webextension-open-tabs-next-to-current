@@ -1,16 +1,19 @@
 {
-    "globals": {
-        "browser": true,
-        "chrome": true
-    },
     "rules": {
-        "no-set-state": "off"
+        "comma-dangle": [2, "always-multiline"],
+        "indent": [2, 4],
+        "linebreak-style": [2, "unix"],
+        "no-console": [0],
+        "no-unused-vars": [2, {"args": "all", "argsIgnorePattern": "^_[^_]", "varsIgnorePattern": "^_[^_]"}],
+        "quotes": [2, "double"],
+        "semi": [2, "always"],
     },
     "env": {
         "browser": true,
-        "es6": true
+        "commonjs": true,
+        "es6": true,
+        "jquery": true,
+        "webextensions": true,
     },
-    "extends": [
-      "eslint:recommended"
-    ]
+    "extends": "eslint:recommended"
 }
