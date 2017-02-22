@@ -1,17 +1,44 @@
+"use strict";
 
-function activatePlugin(initialActiveTabs) {
-    const lastActiveTab = new Map(initialActiveTabs.map(t => [t.windowId, t.id]));
-    const currentActiveTab = new Map(lastActiveTab);
-    //console.log("tabs loaded:", currentActiveTab);
+function activatePlugin(initialTabs) {
+    let repositionRightOnly = false;
+    function updateOptions() {
+        browser.storage.local.get(["repositionRightOnly"], result => {
+            repositionRightOnly = result.repositionRightOnly || false;
+            console.log("loaded settings:", {repositionRightOnly});
+        });
+    }
+    updateOptions();
+    browser.storage.onChanged.addListener(updateOptions);
+
+    const windowInfoMap = new Map();
+    function getWindowInfo(windowId) {
+        let windowInfo = windowInfoMap.get(windowId);
+        if(windowInfo === undefined) {
+            windowInfo = {numTabs: 0};
+            windowInfoMap.set(windowId, windowInfo);
+        }
+        return windowInfo;
+    }
+    initialTabs.forEach(tab => {
+        const windowInfo = getWindowInfo(tab.windowId);
+        windowInfo.numTabs++;
+        if(tab.active) {
+            windowInfo.activeTabId = tab.id;
+        }
+    });
+    console.log("initial tabs loaded:", {windowInfoMap, initialTabs});
 
     browser.tabs.onActivated.addListener(({tabId, windowId}) => {
-        lastActiveTab.set(windowId, currentActiveTab.get(windowId));
-        currentActiveTab.set(windowId, tabId);
-        console.log("onActivated:", {tabId, windowId, lastActiveTab: lastActiveTab.get(windowId)});
+        const windowInfo = getWindowInfo(windowId);
+        windowInfo.lastActiveTabId = windowInfo.activeTabId;
+        windowInfo.activeTabId = tabId;
+        console.log("onActivated:", {tabId, windowId, windowInfo});
     });
 
     function getLastTabIndex(openedTab) {
-        const lastTabId = (openedTab.active ? lastActiveTab : currentActiveTab).get(openedTab.windowId);
+        const windowInfo = getWindowInfo(openedTab.windowId);
+        const lastTabId = openedTab.active ? windowInfo.lastActiveTabId : windowInfo.activeTabId;
         if(lastTabId === undefined) {
             // opening new window
             return Promise.reject("no active tab");
@@ -43,15 +70,34 @@ function activatePlugin(initialActiveTabs) {
 
     browser.tabs.onCreated.addListener(tab => {
         console.log("Tab created:", tab);
-        if(enabled) {
+
+        const windowInfo = getWindowInfo(tab.windowId);
+        windowInfo.numTabs++;
+        if(tab.active) {
+            windowInfo.activeTabId = tab.id;
+        }
+
+        if(windowInfo.opening) {
+            const now = new Date().getTime();
+            if(now - windowInfo.lastTabCreated < 200) {
+                console.log("New tab created too soon after window, probably restoring, skipping:", {tab, windowInfo});
+                windowInfo.lastTabCreated = now;
+                return;
+            }
+            windowInfo.opening = false;
+        }
+
+        if(enabled && (!repositionRightOnly || tab.index === windowInfo.numTabs - 1)) {
             moveTabNextToCurrent(tab);
         }
     });
 
-    browser.tabs.onRemoved.addListener(tabId => {
-        console.log("Tab removed:", tabId);
-    });
+    browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+        const windowInfo = getWindowInfo(removeInfo.windowId);
+        windowInfo.numTabs--;
 
+        console.log("Tab removed:", {tabId, removeInfo});
+    });
 
     browser.commands.onCommand.addListener(command => {
         if(command === "open-new-default") {
@@ -67,13 +113,15 @@ function activatePlugin(initialActiveTabs) {
 
     browser.windows.onRemoved.addListener(windowId => {
         console.log("Window removed:", windowId);
-        lastActiveTab.delete(windowId);
-        currentActiveTab.delete(windowId);
+        windowInfoMap.delete(windowId);
     });
 
     browser.windows.onCreated.addListener(window => {
         console.log("New window:", window);
+        const windowInfo = getWindowInfo(window.id);
+        windowInfo.opening = true;
+        windowInfo.lastTabCreated = new Date().getTime();
     });
 }
 
-browser.tabs.query({active: true}).then(activatePlugin);
+browser.tabs.query({}).then(activatePlugin);
