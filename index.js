@@ -122,6 +122,18 @@ function activatePlugin(initialTabs) {
         windowInfo.opening = true;
         windowInfo.lastTabCreated = new Date().getTime();
     });
+
+    browser.tabs.onAttached.addListener((tabId, attachInfo) => {
+        console.log("Tab attached:", tabId, attachInfo);
+        const windowInfo = getWindowInfo(attachInfo.newWindowId);
+        windowInfo.numTabs++;
+    });
+
+    browser.tabs.onDetached.addListener((tabId, detachInfo) => {
+        console.log("Tab detached:", tabId, detachInfo);
+        const windowInfo = getWindowInfo(detachInfo.oldWindowId);
+        windowInfo.numTabs--;
+    });
 }
 
 browser.tabs.query({}).then(activatePlugin);
