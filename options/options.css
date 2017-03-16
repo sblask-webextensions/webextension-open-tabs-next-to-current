@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    padding: 10px;
+}
+input[type=submit] {
+    margin-top: 15px;
+}
+.wrapper {
+    padding: 3px;
+}

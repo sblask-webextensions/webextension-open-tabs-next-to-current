@@ -1,65 +1,139 @@
-const core = require("sdk/view/core");
-const hotkeys = require("sdk/hotkeys");
-const tabs = require("sdk/tabs");
-const windows = require("sdk/windows").browserWindows;
+"use strict";
 
-const helpers = require("./lib/helpers");
-const state = require("./lib/state");
+function activatePlugin(initialTabs) {
+    let repositionRightOnly = false;
+    function updateOptions() {
+        browser.storage.local.get(["repositionRightOnly"], result => {
+            repositionRightOnly = result.repositionRightOnly || false;
+            console.log("loaded settings:", {repositionRightOnly});
+        });
+    }
+    updateOptions();
+    browser.storage.onChanged.addListener(updateOptions);
 
-let hotkey;
+    const windowInfoMap = new Map();
+    function getWindowInfo(windowId) {
+        let windowInfo = windowInfoMap.get(windowId);
+        if(windowInfo === undefined) {
+            windowInfo = {numTabs: 0};
+            windowInfoMap.set(windowId, windowInfo);
+        }
+        return windowInfo;
+    }
+    initialTabs.forEach(tab => {
+        const windowInfo = getWindowInfo(tab.windowId);
+        windowInfo.numTabs++;
+        if(tab.active) {
+            windowInfo.activeTabId = tab.id;
+        }
+    });
+    console.log("initial tabs loaded:", {windowInfoMap, initialTabs});
 
-function __disableUntilEnabled(_event) {
-    state.disableUntilEnabled();
-}
-
-function __enable(_event) {
-    state.enable();
-}
-
-function registerListeners(window) {
-    const lowLevelWindow = core.viewFor(window);
-
-    lowLevelWindow.addEventListener("click", helpers.maybeDisableIfNewTabButtonClick, true);
-    lowLevelWindow.addEventListener("SSWindowStateBusy", __disableUntilEnabled);
-    lowLevelWindow.addEventListener("SSWindowStateReady", __enable);
-}
-
-function removeListeners(window) {
-    const lowLevelWindow = core.viewFor(window);
-
-    lowLevelWindow.removeEventListener("click", helpers.maybeDisableIfNewTabButtonClick);
-    lowLevelWindow.removeEventListener("SSWindowStateBusy", __disableUntilEnabled);
-    lowLevelWindow.removeEventListener("SSWindowStateReady", __enable);
-}
-
-exports.main = function(options) {
-    console.log("Starting up with reason ", options.loadReason);
-
-    hotkey = hotkeys.Hotkey({
-        combo: "accel-alt-t",
-        onPress: helpers.openNewTabAtDefaultPosition,
+    browser.tabs.onActivated.addListener(({tabId, windowId}) => {
+        const windowInfo = getWindowInfo(windowId);
+        windowInfo.lastActiveTabId = windowInfo.activeTabId;
+        windowInfo.activeTabId = tabId;
+        console.log("onActivated:", {tabId, windowId, windowInfo});
     });
 
-    tabs.on("open", helpers.maybeMoveTab);
+    function getLastTabIndex(openedTab) {
+        const windowInfo = getWindowInfo(openedTab.windowId);
+        const lastTabId = openedTab.active ? windowInfo.lastActiveTabId : windowInfo.activeTabId;
+        if(lastTabId === undefined) {
+            // opening new window
+            return Promise.reject("no active tab");
+        }
 
-    for (let window of windows) {
-        registerListeners(window);
+        return browser.tabs.get(lastTabId).then(tab => {
+            console.log("Last tab:", tab);
+            return tab.index;
+        });
     }
 
-    windows.on("open", registerListeners);
-};
-
-exports.onUnload = function(reason) {
-    console.log("Closing down with reason ", reason);
-
-    windows.removeListener("open", registerListeners);
-    for (let window of windows) {
-        removeListeners(window);
+    function moveTabNextToCurrent(openedTab) {
+        return getLastTabIndex(openedTab)
+            .then(index => {
+                // If new tab is left of last, last one has already been shifted one
+                if(openedTab.index > index) {
+                    index++;
+                }
+                console.log("New tab index: " + index);
+                return browser.tabs.move(openedTab.id, {index: index});
+            }).catch(e => {
+                if(e !== "no active tab") {
+                    throw e;
+                }
+            });
     }
 
-    tabs.removeListener("open", helpers.maybeMoveTab);
+    let enabled = true;
 
-    if (hotkey) {
-        hotkey.destroy();
-    }
-};
+    browser.tabs.onCreated.addListener(tab => {
+        console.log("Tab created:", tab);
+
+        const windowInfo = getWindowInfo(tab.windowId);
+        windowInfo.numTabs++;
+        if(tab.active) {
+            windowInfo.activeTabId = tab.id;
+        }
+
+        if(windowInfo.opening) {
+            const now = new Date().getTime();
+            if(now - windowInfo.lastTabCreated < 200) {
+                console.log("New tab created too soon after window, probably restoring, skipping:", {tab, windowInfo});
+                windowInfo.lastTabCreated = now;
+                return;
+            }
+            windowInfo.opening = false;
+        }
+
+        if(enabled && (!repositionRightOnly || tab.index === windowInfo.numTabs - 1)) {
+            moveTabNextToCurrent(tab);
+        }
+    });
+
+    browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+        const windowInfo = getWindowInfo(removeInfo.windowId);
+        windowInfo.numTabs--;
+
+        console.log("Tab removed:", {tabId, removeInfo});
+    });
+
+    browser.commands.onCommand.addListener(command => {
+        if(command === "open-new-default") {
+            enabled = false;
+            browser.tabs.create({}).then(() => {
+                enabled = true;
+            }).catch(e => {
+                enabled = true;
+                throw e;
+            });
+        }
+    });
+
+    browser.windows.onRemoved.addListener(windowId => {
+        console.log("Window removed:", windowId);
+        windowInfoMap.delete(windowId);
+    });
+
+    browser.windows.onCreated.addListener(window => {
+        console.log("New window:", window);
+        const windowInfo = getWindowInfo(window.id);
+        windowInfo.opening = true;
+        windowInfo.lastTabCreated = new Date().getTime();
+    });
+
+    browser.tabs.onAttached.addListener((tabId, attachInfo) => {
+        console.log("Tab attached:", tabId, attachInfo);
+        const windowInfo = getWindowInfo(attachInfo.newWindowId);
+        windowInfo.numTabs++;
+    });
+
+    browser.tabs.onDetached.addListener((tabId, detachInfo) => {
+        console.log("Tab detached:", tabId, detachInfo);
+        const windowInfo = getWindowInfo(detachInfo.oldWindowId);
+        windowInfo.numTabs--;
+    });
+}
+
+browser.tabs.query({}).then(activatePlugin);

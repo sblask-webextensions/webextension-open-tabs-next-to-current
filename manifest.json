@@ -1,0 +1,26 @@
+{
+  "author": "Sebastian Blask",
+  "background": {
+    "scripts": ["index.js"]
+  },
+  "commands": {
+    "open-new-default" : {
+        "suggested_key": {
+          "default": "Alt+Shift+Y"
+        },
+        "description": "Open new tabs to the right of the current one."
+    }
+  },
+  "description": "Open new tabs to the right of the current one.",
+  "homepage_url": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
+  "icons": {
+    "64": "data/icon.png"
+  },
+  "manifest_version": 2,
+  "name": "Open Tabs Next to Current",
+  "options_ui": {
+    "page": "options/options.html"
+  },
+  "permissions": ["storage"],
+  "version": "2.0.0.3"
+}
