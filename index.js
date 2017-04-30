@@ -2,9 +2,12 @@ const core = require("sdk/view/core");
 const hotkeys = require("sdk/hotkeys");
 const tabs = require("sdk/tabs");
 const windows = require("sdk/windows").browserWindows;
+const webExtension = require("sdk/webextension");
 
 const helpers = require("./lib/helpers");
 const state = require("./lib/state");
+
+webExtension.startup();
 
 let hotkey;
 
