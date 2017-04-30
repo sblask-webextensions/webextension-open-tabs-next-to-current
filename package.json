@@ -1,16 +1,43 @@
 {
-    "title": "Open Tabs Next to Current",
-    "name": "opentabsnexttocurrent",
-    "id": "opentabsnexttocurrent@sblask",
-    "version": "1.1.5",
-    "description": "Open new tabs to the right of the current one.",
-    "main": "index.js",
     "author": "Sebastian Blask",
-    "engines": {
-        "firefox": ">=38.0a1",
-        "fennec": ">=38.0a1"
+    "description": "Open new tabs to the right of the current one.",
+    "devDependencies": {
+        "eslint": "1.10.x",
+        "jpm": "1.0.x",
+        "jscs": "2.6.x"
     },
+    "engines": {
+        "fennec": ">=38.0a1",
+        "firefox": ">=38.0a1"
+    },
+    "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
+    "icon": "resource://opentabsnexttocurrent-at-sblask/data/icon.png",
+    "id": "opentabsnexttocurrent@sblask",
+    "keywords": [
+        "jetpack",
+        "placement",
+        "tab"
+    ],
     "license": "MIT",
+    "main": "index.js",
+    "name": "opentabsnexttocurrent",
+    "permissions": {
+        "private-browsing": true
+    },
+    "preferences": [
+        {
+            "description": "New tabs are opened to the right of the current one when opened by click on the + button in tab bar",
+            "name": "enabledForButton",
+            "title": "Enabled for New Tab Button",
+            "type": "bool",
+            "value": true
+        }
+    ],
+    "preferences-branch": "opentabsnexttocurrent",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
+    },
     "scripts": {
         "lint": "eslint index.js lib data test && jscs index.js lib data test",
         "start": "jpm --binary firefox-trunk run",
@@ -20,33 +47,6 @@
         "test:travis": "jpm --binary /usr/local/bin/firefox test",
         "xpi": "jpm xpi"
     },
-    "devDependencies": {
-        "eslint": "1.10.x",
-        "jpm": "1.0.x",
-        "jscs": "2.6.x"
-    },
-    "keywords": [
-        "jetpack",
-        "placement",
-        "tab"
-    ],
-    "icon": "resource://opentabsnexttocurrent-at-sblask/data/icon.png",
-    "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
-    },
-    "permissions": {
-        "private-browsing": true
-    },
-    "preferences-branch": "opentabsnexttocurrent",
-    "preferences": [
-        {
-            "name": "enabledForButton",
-            "title": "Enabled for New Tab Button",
-            "description": "New tabs are opened to the right of the current one when opened by click on the + button in tab bar",
-            "type": "bool",
-            "value": true
-        }
-    ]
+    "title": "Open Tabs Next to Current",
+    "version": "1.1.5"
 }
