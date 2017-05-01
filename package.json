@@ -40,13 +40,14 @@
         "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
     },
     "scripts": {
+        "build": "jpm xpi",
+        "help": "jpm --help",
         "lint": "eslint index.js lib data test && jscs index.js lib data test",
-        "start": "jpm --binary firefox-trunk run",
-        "start:stable": "jpm --binary /usr/bin/firefox run",
+        "start": "GTK_THEME=Greybird jpm --binary firefox-trunk run",
+        "start:stable": "GTK_THEME=Greybird jpm --binary /usr/bin/firefox run",
         "test": "jpm --binary firefox-trunk test",
         "test:stable": "jpm --binary /usr/bin/firefox test",
-        "test:travis": "jpm --binary /usr/local/bin/firefox test",
-        "xpi": "jpm xpi"
+        "test:travis": "jpm --binary /usr/local/bin/firefox test"
     },
     "title": "Open Tabs Next to Current",
     "version": "2.0.0"
