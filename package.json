@@ -42,7 +42,7 @@
     "scripts": {
         "build": "jpm xpi",
         "help": "jpm --help",
-        "lint": "eslint index.js lib data test && jscs index.js lib data test",
+        "lint": "eslint index.js webextension/background.js && jscs index.js webextension/background.js",
         "start": "GTK_THEME=Greybird jpm --binary firefox-trunk run",
         "start:stable": "GTK_THEME=Greybird jpm --binary /usr/bin/firefox run",
         "test": "jpm --binary firefox-trunk test",
