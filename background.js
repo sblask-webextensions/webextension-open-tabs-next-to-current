@@ -22,6 +22,19 @@ browser.windows.onRemoved.addListener(updateCurrentTab);
 
 browser.tabs.onCreated.addListener(moveTab);
 
+browser.commands.onCommand.addListener(function(command) {
+    if (command == "open-new-tab-at-default-location") {
+        browser.tabs.onCreated.removeListener(moveTab);
+        browser.tabs.onCreated.addListener(fixListeners);
+        browser.tabs.create({});
+    }
+});
+
+function fixListeners() {
+    browser.tabs.onCreated.removeListener(fixListeners);
+    browser.tabs.onCreated.addListener(moveTab);
+}
+
 function moveTab(newTab) {
     if (!currentTabId) {
         return;
