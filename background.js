@@ -7,7 +7,9 @@ function updateCurrentTab() {
     };
     browser.tabs.query(query).then(
         (tabs) => {
-            currentTabId = tabs[0].id;
+            if (tabs.length > 0) {
+                currentTabId = tabs[0].id;
+            }
         }
     );
 }
@@ -21,6 +23,10 @@ browser.windows.onRemoved.addListener(updateCurrentTab);
 browser.tabs.onCreated.addListener(moveTab);
 
 function moveTab(newTab) {
+    if (!currentTabId) {
+        return;
+    }
+
     Promise.all([
         browser.windows.getCurrent({ populate: true }),
         browser.tabs.get(currentTabId),
