@@ -1,1 +1,0 @@
-require("sdk/webextension").startup();
