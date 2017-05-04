@@ -11,15 +11,6 @@
             "background.js"
         ]
     },
-    "browser_action": {
-        "browser_style": true,
-        "default_icon": {
-            "16": "icons/icon16.png",
-            "24": "icons/icon24.png",
-            "32": "icons/icon32.png"
-        },
-        "default_title": "Open Tabs Next to Current"
-    },
     "commands": {
         "open-new-tab-at-default-location": {
             "description": "Open new tab at default location",
@@ -30,8 +21,10 @@
     },
     "description": "Open new tabs to the right of the current one.",
     "homepage_url": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
+    "icons": {
+        "48": "icon.png"
+    },
     "manifest_version": 2,
     "name": "Open Tabs Next to Current",
     "version": "2.0.0"
 }
-

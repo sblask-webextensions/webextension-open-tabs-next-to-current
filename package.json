@@ -1,53 +1,23 @@
 {
     "author": "Sebastian Blask",
-    "description": "Open new tabs to the right of the current one.",
     "devDependencies": {
         "eslint": "3.13.x",
-        "jpm": "1.3.x",
-        "jscs": "2.6.x"
+        "jscs": "2.6.x",
+        "web-ext": "1.9.x"
     },
-    "engines": {
-        "fennec": ">=38.0a1",
-        "firefox": ">=38.0a1"
-    },
-    "hasEmbeddedWebExtension": true,
-    "homepage": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
-    "icon": "resource://opentabsnexttocurrent-at-sblask/data/icon.png",
-    "id": "opentabsnexttocurrent@sblask",
-    "keywords": [
-        "jetpack",
-        "placement",
-        "tab"
-    ],
     "license": "MIT",
-    "main": "index.js",
     "name": "opentabsnexttocurrent",
-    "permissions": {
-        "private-browsing": true
-    },
-    "preferences": [
-        {
-            "description": "New tabs are opened to the right of the current one when opened by click on the + button in tab bar",
-            "name": "enabledForButton",
-            "title": "Enabled for New Tab Button",
-            "type": "bool",
-            "value": true
-        }
-    ],
-    "preferences-branch": "opentabsnexttocurrent",
     "repository": {
         "type": "git",
         "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
     },
     "scripts": {
-        "build": "jpm xpi",
-        "help": "jpm --help",
-        "lint": "eslint index.js webextension/background.js && jscs index.js webextension/background.js",
-        "start": "GTK_THEME=Greybird jpm --binary firefox-trunk run",
-        "start:stable": "GTK_THEME=Greybird jpm --binary /usr/bin/firefox run",
-        "test": "jpm --binary firefox-trunk test",
-        "test:stable": "jpm --binary /usr/bin/firefox test",
-        "test:travis": "jpm --binary /usr/local/bin/firefox test"
+        "build": "web-ext build --artifacts-dir . --ignore-files screenshots --ignore-files package.json",
+        "help": "web-ext --help",
+        "lint": "eslint background.js && jscs background.js",
+        "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
+        "start:stable": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
+        "test": "web-ext lint"
     },
     "title": "Open Tabs Next to Current",
     "version": "2.0.0"
