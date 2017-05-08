@@ -48,8 +48,23 @@ function moveTab(newTab) {
             let [currentWindow, currentTab] = result;
             let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
             if (!isUndoCloseOrRelatedTab) {
-                browser.tabs.move(newTab.id, {index: currentTab.index + 1});
+                browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
             }
         }
     );
+}
+
+function getNewIndex(currentWindow, currentTab) {
+    if (!currentTab.pinned) {
+        return currentTab.index + 1;
+    }
+
+    let lastPinnedTab = undefined;
+    for (let tab of currentWindow.tabs) {
+        if (tab.pinned) {
+            lastPinnedTab = tab;
+        } else {
+            return lastPinnedTab.index + 1;
+        }
+    }
 }

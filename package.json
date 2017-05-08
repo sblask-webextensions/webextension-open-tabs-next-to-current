@@ -20,5 +20,5 @@
         "test": "web-ext lint"
     },
     "title": "Open Tabs Next to Current",
-    "version": "2.0.0"
+    "version": "2.0.1b"
 }
