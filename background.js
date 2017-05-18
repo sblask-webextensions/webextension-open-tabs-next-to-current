@@ -46,6 +46,11 @@ function moveTab(newTab) {
     ]).then(
         (result) => {
             let [currentWindow, currentTab] = result;
+            if (currentTab.windowId !== newTab.windowId) {
+                // tab created by drag into window without focus change
+                return;
+            }
+
             let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
             if (!isUndoCloseOrRelatedTab) {
                 browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
