@@ -15,7 +15,8 @@
         "open-new-tab-at-default-location": {
             "description": "Open new tab at default location",
             "suggested_key": {
-                "default": "Ctrl+Y"
+                "default": "Ctrl+Y",
+                "windows": "Ctrl+Shift+Y"
             }
         }
     },

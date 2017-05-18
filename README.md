@@ -7,7 +7,8 @@ Open tabs that would normally be opened last next to the current one. Tabs that
 are being re-opened and tabs that are opened by clicking on links in the
 current tab are therefore not included. You can change the setting
 `browser.tabs.insertRelatedAfterCurrent` in `about:config` if you want even the
-latter to be opened right next to the current.
+latter to be opened right next to the current. You can use `Ctrl-Y`
+(`Ctrl-Shift-Y` on Windows) to open a new tab at the default location.
 
 Feedback
 --------
