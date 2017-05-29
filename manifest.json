@@ -23,7 +23,7 @@
     "description": "Open new tabs to the right of the current one.",
     "homepage_url": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
     "icons": {
-        "48": "icon.png"
+        "48": "icon.svg"
     },
     "manifest_version": 2,
     "name": "Open Tabs Next to Current",

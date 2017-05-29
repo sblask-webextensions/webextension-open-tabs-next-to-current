@@ -12,7 +12,7 @@
         "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
     },
     "scripts": {
-        "build": "web-ext build --artifacts-dir . --ignore-files screenshots --ignore-files package.json",
+        "build": "web-ext build --artifacts-dir . --ignore-files screenshots --ignore-files package.json --ignore-files icon.fodg",
         "help": "web-ext --help",
         "lint": "eslint background.js && jscs background.js",
         "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
