@@ -17,7 +17,8 @@ Caused by limitations of the webextension API, see
 [#26](https://github.com/sblask/firefox-open-tabs-next-to-current/issues/26):
 
  - tabs are visibly moved to their final position
- - the tab bar is scrolled so the opened tab becomes the first visible one on the left
+ - the tab bar is scrolled so the opened tab becomes the first visible one on
+   the left (Firefox only)
 
 
 Feedback
