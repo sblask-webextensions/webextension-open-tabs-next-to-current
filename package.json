@@ -14,7 +14,7 @@
     "scripts": {
         "build": "web-ext build --artifacts-dir . --ignore-files screenshots --ignore-files package.json --ignore-files icon.fodg --ignore-files *.png",
         "help": "web-ext --help",
-        "lint": "eslint background.js && jscs background.js",
+        "lint": "eslint --debug *.js && jscs *.js",
         "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
         "start:stable": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
         "test": "web-ext lint"
