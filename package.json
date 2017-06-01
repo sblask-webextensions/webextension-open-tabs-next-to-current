@@ -12,13 +12,20 @@
         "url": "https://github.com/sblask/firefox-open-tabs-next-to-current"
     },
     "scripts": {
-        "build": "web-ext build --artifacts-dir . --ignore-files screenshots --ignore-files package.json --ignore-files icon.fodg --ignore-files *.png",
+        "artifact-create:chrome":  "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg *.svg",
+        "artifact-create:firefox": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg *.png browser-polyfill.js",
+        "artifact-rename:chrome":  "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-chrome.zip/\"  *$VERSION.zip",
+        "artifact-rename:firefox": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-firefox.zip/\" *$VERSION.zip",
+        "build": "git add --all && rm *.zip && npm run modify:chrome && npm run artifact-create:chrome && npm run artifact-rename:chrome && git checkout -- . && npm run modify:firefox && npm run artifact-create:firefox && npm run artifact-rename:firefox && git checkout -- .",
         "help": "web-ext --help",
         "lint": "eslint --debug *.js && jscs *.js",
+        "modify:chrome":  "jq --indent 4 '. | del(.applications)' manifest.json | sponge manifest.json",
+        "modify:firefox": "jq --indent 4 '. | .background.scripts |= map(select(. != \"browser-polyfill.js\")) | if has(\"icons\") then .icons |= {\"48\": \"icon.svg\"} else . end' manifest.json | sponge manifest.json",
+        "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create -a *$VERSION*.zip -m $VERSION $VERSION",
         "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
         "start:stable": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
         "test": "web-ext lint"
     },
     "title": "Open Tabs Next to Current",
-    "version": "2.0.5"
+    "version": "2.0.8"
 }

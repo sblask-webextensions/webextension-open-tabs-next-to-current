@@ -8,6 +8,7 @@
     "author": "Sebastian Blask",
     "background": {
         "scripts": [
+            "browser-polyfill.js",
             "background.js"
         ]
     },
@@ -23,9 +24,13 @@
     "description": "Open new tabs to the right of the current one.",
     "homepage_url": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
     "icons": {
-        "48": "icon.svg"
+        "16": "icon-16x16.png",
+        "32": "icon-32x32.png",
+        "48": "icon-48x48.png",
+        "64": "icon-64x64.png",
+        "128": "icon-128x128.png"
     },
     "manifest_version": 2,
     "name": "Open Tabs Next to Current",
-    "version": "2.0.5"
+    "version": "2.0.8"
 }
