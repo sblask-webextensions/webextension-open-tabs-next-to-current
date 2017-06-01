@@ -52,7 +52,8 @@ function moveTab(newTab) {
             }
 
             let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
-            if (!isUndoCloseOrRelatedTab) {
+            let isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
+            if (!isUndoCloseOrRelatedTab && !isRecoveredTab) {
                 browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
             }
         }
