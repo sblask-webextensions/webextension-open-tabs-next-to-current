@@ -18,7 +18,7 @@
         "artifact-rename:firefox": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-firefox.zip/\" *$VERSION.zip",
         "build": "git add --all; rm *.zip; npm run modify:chrome && npm run artifact-create:chrome && npm run artifact-rename:chrome && git checkout -- . && npm run modify:firefox && npm run artifact-create:firefox && npm run artifact-rename:firefox && git checkout -- .",
         "help": "web-ext --help",
-        "lint": "eslint --debug *.js && jscs *.js",
+        "lint": "eslint --debug $(find . -not -path '*node_modules*' -name '*.js') && jscs $(find . -not -path '*node_modules*' -name '*.js')",
         "modify:chrome":  "jq --indent 4 '. | del(.applications)' manifest.json | sponge manifest.json",
         "modify:firefox": "jq --indent 4 '. | .background.scripts |= map(select(. != \"browser-polyfill.js\")) | if has(\"icons\") then .icons |= {\"48\": \"icon.svg\"} else . end' manifest.json | sponge manifest.json",
         "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
