@@ -22,6 +22,7 @@
         "modify:chrome":  "jq --indent 4 '. | del(.applications)' manifest.json | sponge manifest.json",
         "modify:firefox": "jq --indent 4 '. | .background.scripts |= map(select(. != \"browser-polyfill.js\")) | if has(\"icons\") then .icons |= {\"48\": \"icon.svg\"} else . end' manifest.json | sponge manifest.json",
         "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
+        "readme": "cat README.md | sed -r 's/\\[.+\\]\\((.+)\\)/\\1/' | sed -r '/\\[/{ N; s/\\[.+\\]\\((.+)\\)/\\n\\1/ }' | sed -r '/```/,/```/d' | vim -",
         "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
         "start:stable": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
         "test": "web-ext lint"

@@ -1,14 +1,24 @@
 [![Build Status](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current.svg?branch=master)](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current)
 
-firefox-open-tabs-next-to-current
-=================================
+Open Tabs Next To Current
+=========================
 
 Open tabs that would normally be opened last next to the current one. Tabs that
-are being re-opened and tabs that are opened by clicking on links in the
-current tab are therefore not included. You can change the setting
-`browser.tabs.insertRelatedAfterCurrent` in `about:config` if you want even the
-latter to be opened right next to the current. You can use `Ctrl-Y`
+are being re-opened are thus not included.  You can use `Ctrl-Y`
 (`Ctrl-Shift-Y` on Windows) to open a new tab at the default location.
+
+Note for Chrome
+---------------
+
+Keyboard shortcuts are not automatically set up. You need to do that manually
+on the extension page in settings.
+
+Note for Firefox
+----------------
+
+Tabs that are opened by clicking on links are opened at the default location.
+You can change the setting `browser.tabs.insertRelatedAfterCurrent` in
+`about:config` if you want even those to be opened right next to the current. 
 
 Known Issues
 ------------
@@ -19,7 +29,6 @@ Caused by limitations of the webextension API, see
  - tabs are visibly moved to their final position
  - the tab bar is scrolled so the opened tab becomes the first visible one on
    the left (Firefox only)
-
 
 Feedback
 --------
