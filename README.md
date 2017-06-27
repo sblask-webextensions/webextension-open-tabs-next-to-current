@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current.svg?branch=master)](https://travis-ci.org/sblask/firefox-open-tabs-next-to-current)
+[![Build Status](https://travis-ci.org/sblask/webextension-open-tabs-next-to-current.svg?branch=master)](https://travis-ci.org/sblask/webextension-open-tabs-next-to-current)
 
 Open Tabs Next To Current
 =========================
@@ -24,7 +24,7 @@ Known Issues
 ------------
 
 Caused by limitations of the webextension API, see
-[#26](https://github.com/sblask/firefox-open-tabs-next-to-current/issues/26):
+[#26](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/26):
 
  - tabs are visibly moved to their final position
  - the tab bar is scrolled so the opened tab becomes the first visible one on
@@ -34,6 +34,6 @@ Feedback
 --------
 
 You can report bugs or make feature requests on
-[Github](https://github.com/sblask/firefox-open-tabs-next-to-current).
+[Github](https://github.com/sblask/webextension-open-tabs-next-to-current).
 
 Patches are welcome.

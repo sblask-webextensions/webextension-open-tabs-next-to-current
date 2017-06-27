@@ -22,7 +22,7 @@
         }
     },
     "description": "Open new tabs to the right of the current one.",
-    "homepage_url": "https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/",
+    "homepage_url": "https://github.com/sblask/webextension-open-tabs-next-to-current",
     "icons": {
         "128": "icon-128x128.png",
         "16": "icon-16x16.png",
