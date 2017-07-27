@@ -26,8 +26,8 @@
         "modify:remove-polyfill-references": "sed --in-place --regexp-extended '/\"(\\.\\.\\/)?browser-polyfill.js\"/d' $(find . -not -path '*node_modules*' -name '*.js' -o -name '*.html')",
         "readme": "cat README.md | sed -r 's/\\[.+\\]\\((.+)\\)/\\1/' | sed -r '/\\[/{ N; s/\\[.+\\]\\((.+)\\)/\\n\\1/ }' | sed -r '/```/,/```/d' | vim -",
         "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
-        "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
-        "start:stable": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
+        "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
+        "start:nightly": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
         "test": "web-ext lint"
     },
     "title": "Open Tabs Next to Current",
