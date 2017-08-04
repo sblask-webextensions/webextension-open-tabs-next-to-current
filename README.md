@@ -24,11 +24,15 @@ Known Issues
 ------------
 
 Caused by limitations of the webextension API, see
-[#26](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/26):
+[#26](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/26)
+and
+[#29](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/29):
 
  - tabs are visibly moved to their final position
  - the tab bar is scrolled so the opened tab becomes the first visible one on
    the left (Firefox only)
+ - when opening multiple tabs at once, only one of them is opened at the right
+   position
 
 Feedback
 --------
