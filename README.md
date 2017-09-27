@@ -38,6 +38,6 @@ Feedback
 --------
 
 You can report bugs or make feature requests on
-[Github](https://github.com/sblask/webextension-open-tabs-next-to-current).
+[Github](https://github.com/sblask/webextension-open-tabs-next-to-current)
 
 Patches are welcome.
