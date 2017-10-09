@@ -34,6 +34,11 @@ and
  - when opening multiple tabs at once, only one of them is opened at the right
    position
 
+Privacy Policy
+--------------
+
+This extension does not collect or send data of any kind to third parties.
+
 Feedback
 --------
 
