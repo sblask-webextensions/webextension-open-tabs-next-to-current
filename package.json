@@ -3,7 +3,7 @@
     "devDependencies": {
         "eslint": "4.1.x",
         "jscs": "2.6.x",
-        "web-ext": "1.9.x"
+        "web-ext": "2.2.x"
     },
     "license": "MIT",
     "name": "opentabsnexttocurrent",
