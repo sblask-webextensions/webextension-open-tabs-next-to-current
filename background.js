@@ -1,3 +1,5 @@
+const TAB_SESSION_KEY = "open-tabs-next-to-current-tab-uuid";
+
 let currentTabId = undefined;
 
 function updateCurrentTab() {
@@ -30,6 +32,27 @@ browser.commands.onCommand.addListener(function(command) {
     }
 });
 
+if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
+    browser.runtime.onInstalled.addListener(addSessionKeyToExistingTabs);
+}
+
+function addSessionKeyToExistingTabs(_details) {
+    browser.tabs.query({}).then(
+        allTabs => {
+            for (let existingTab of allTabs) {
+                browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY).then(
+                    (uuid) => {
+                        if (uuid) {
+                            return;
+                        }
+                        browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, uuidv4());
+                    }
+                );
+            }
+        }
+    );
+}
+
 function fixListeners() {
     browser.tabs.onCreated.removeListener(fixListeners);
     browser.tabs.onCreated.addListener(moveTab);
@@ -51,10 +74,23 @@ function moveTab(newTab) {
                 return;
             }
 
-            let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
-            let isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
-            if (!isUndoCloseOrRelatedTab && !isRecoveredTab) {
-                browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+            if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
+                browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY).then(
+                    (uuid) => {
+                        // restored or duplicated tab, position should be right
+                        if (uuid) {
+                            return;
+                        }
+                        browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, uuidv4());
+                        browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+                    }
+                );
+            } else {
+                let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
+                let isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
+                if (!isUndoCloseOrRelatedTab && !isRecoveredTab) {
+                    browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+                }
             }
         }
     );
@@ -73,4 +109,11 @@ function getNewIndex(currentWindow, currentTab) {
             return lastPinnedTab.index + 1;
         }
     }
+}
+
+function uuidv4() {
+    // see https://stackoverflow.com/a/2117523/520061
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
 }
