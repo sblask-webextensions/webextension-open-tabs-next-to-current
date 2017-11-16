@@ -74,6 +74,11 @@ function moveTab(newTab) {
                 return;
             }
 
+            if (newTab.url == 'about:newtab') {
+                // tab created by pressing "New Tab" button
+                return;
+            }
+
             if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
                 browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
