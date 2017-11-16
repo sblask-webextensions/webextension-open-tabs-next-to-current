@@ -13,13 +13,6 @@ Note for Chrome
 Keyboard shortcuts are not automatically set up. You need to do that manually
 on the extension page in settings.
 
-Note for Firefox
-----------------
-
-Tabs that are opened by clicking on links are opened at the default location.
-You can change the setting `browser.tabs.insertRelatedAfterCurrent` in
-`about:config` if you want even those to be opened right next to the current. 
-
 Known Issues
 ------------
 
