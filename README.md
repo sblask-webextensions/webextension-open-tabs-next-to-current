@@ -23,7 +23,9 @@ and
 
  - tabs are visibly moved to their final position
  - the tab bar is scrolled so the opened tab becomes the first visible one on
-   the left (Firefox only)
+   the left (Firefox only) - you can set `browser.tabs.tabMinWidth` in
+   `about:config` to something low like `20` so the tab bar is not scrollable
+   at all
  - when opening multiple tabs at once, only one of them is opened at the right
    position
 
