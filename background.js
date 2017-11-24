@@ -1,6 +1,7 @@
 const TAB_SESSION_KEY = "open-tabs-next-to-current-tab-uuid";
 
 let currentTabId = undefined;
+let knownTabIDs = new Set();
 
 function updateCurrentTab() {
     let query = {
@@ -33,19 +34,24 @@ browser.commands.onCommand.addListener(function(command) {
 });
 
 if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
-    browser.runtime.onInstalled.addListener(addSessionKeyToExistingTabs);
+    addSessionKeyToExistingTabs();
 }
 
-function addSessionKeyToExistingTabs(_details) {
+function addSessionKeyToExistingTabs() {
     browser.tabs.query({}).then(
         allTabs => {
             for (let existingTab of allTabs) {
                 browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
                         if (uuid) {
-                            return;
+                            if (!knownTabIDs.has(uuid)) {
+                                knownTabIDs.add(uuid);
+                                return;
+                            }
                         }
-                        browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, uuidv4());
+                        let newUUID = uuidv4();
+                        knownTabIDs.add(newUUID);
+                        browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, newUUID);
                     }
                 );
             }
@@ -77,11 +83,17 @@ function moveTab(newTab) {
             if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
                 browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
-                        // restored or duplicated tab, position should be right
                         if (uuid) {
-                            return;
+                            // restored tab position should be correct
+                            if (!knownTabIDs.has(uuid)) {
+                                knownTabIDs.add(uuid);
+                                return;
+                            }
                         }
-                        browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, uuidv4());
+                        // new or duplicated tab
+                        let newUUID = uuidv4();
+                        knownTabIDs.add(newUUID);
+                        browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
                         browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
                     }
                 );
