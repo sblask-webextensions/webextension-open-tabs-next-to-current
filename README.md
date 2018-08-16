@@ -13,6 +13,12 @@ Note for Chrome
 Keyboard shortcuts are not automatically set up. You need to do that manually
 on the extension page in settings.
 
+Note for Firefox
+----------------
+
+After the addition of the `browser.tabs.insertAfterCurrent` setting in
+`about:config` you do not need this extension anymore.
+
 Known Issues
 ------------
 
