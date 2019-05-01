@@ -1,7 +1,7 @@
 const TAB_SESSION_KEY = "open-tabs-next-to-current-tab-uuid";
 
 let currentTabId = undefined;
-let knownTabIDs = new Set();
+let knownTabIds = [];
 
 function updateCurrentTab() {
     let query = {
@@ -24,6 +24,7 @@ browser.windows.onFocusChanged.addListener(updateCurrentTab);
 browser.windows.onRemoved.addListener(updateCurrentTab);
 
 browser.tabs.onCreated.addListener(moveTab);
+browser.tabs.onRemoved.addListener(forgetTab);
 
 browser.commands.onCommand.addListener(function(command) {
     if (command == "open-new-tab-at-default-location") {
@@ -44,13 +45,13 @@ function addSessionKeyToExistingTabs() {
                 browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
                         if (uuid) {
-                            if (!knownTabIDs.has(uuid)) {
-                                knownTabIDs.add(uuid);
+                            if (knownTabIds.indexOf(uuid) === -1) {
+                                knownTabIds[existingTab.id] = uuid;
                                 return;
                             }
                         }
                         let newUUID = uuidv4();
-                        knownTabIDs.add(newUUID);
+                        knownTabIds[existingTab.id] = newUUID;
                         browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, newUUID);
                     }
                 );
@@ -83,16 +84,18 @@ function moveTab(newTab) {
             if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
                 browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
+                        // restored and duplicated tabs have a uuid
                         if (uuid) {
-                            // restored tab position should be correct
-                            if (!knownTabIDs.has(uuid)) {
-                                knownTabIDs.add(uuid);
+                            // duplicated tabs' uuid will be in knownTabIds, so this is a restored tab
+                            if (knownTabIds.indexOf(uuid) === -1) {
+                                knownTabIds[newTab.id] = uuid;
+                                // tab position should be correct
                                 return;
                             }
                         }
-                        // new or duplicated tab
+                        // new or duplicated tabs need to be moved
                         let newUUID = uuidv4();
-                        knownTabIDs.add(newUUID);
+                        knownTabIds[newTab.id] = newUUID;
                         browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
                         browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
                     }
@@ -106,6 +109,10 @@ function moveTab(newTab) {
             }
         }
     );
+}
+
+function forgetTab(tabId) {
+    delete knownTabIds[tabId];
 }
 
 function getNewIndex(currentWindow, currentTab) {
