@@ -2,7 +2,7 @@
     "author": "Sebastian Blask",
     "devDependencies": {
         "eslint": "7.3.x",
-        "web-ext": "4.2.x"
+        "web-ext": "4.3.x"
     },
     "license": "MIT",
     "name": "opentabsnexttocurrent",
