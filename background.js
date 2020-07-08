@@ -1,10 +1,10 @@
 const TAB_SESSION_KEY = "open-tabs-next-to-current-tab-uuid";
 
 let currentTabId = undefined;
-let knownTabIds = [];
+const knownTabIds = [];
 
 function updateCurrentTab() {
-    let query = {
+    const query = {
         active: true,
         currentWindow: true,
     };
@@ -41,7 +41,7 @@ if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
 function addSessionKeyToExistingTabs() {
     browser.tabs.query({}).then(
         allTabs => {
-            for (let existingTab of allTabs) {
+            for (const existingTab of allTabs) {
                 browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY).then(
                     (uuid) => {
                         if (uuid) {
@@ -50,7 +50,7 @@ function addSessionKeyToExistingTabs() {
                                 return;
                             }
                         }
-                        let newUUID = uuidv4();
+                        const newUUID = uuidv4();
                         knownTabIds[existingTab.id] = newUUID;
                         browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, newUUID);
                     }
@@ -75,7 +75,7 @@ function moveTab(newTab) {
         browser.tabs.get(currentTabId),
     ]).then(
         (result) => {
-            let [currentWindow, currentTab] = result;
+            const [currentWindow, currentTab] = result;
             if (currentTab.windowId !== newTab.windowId) {
                 // tab created by drag into window without focus change
                 return;
@@ -94,15 +94,15 @@ function moveTab(newTab) {
                             }
                         }
                         // new or duplicated tabs need to be moved
-                        let newUUID = uuidv4();
+                        const newUUID = uuidv4();
                         knownTabIds[newTab.id] = newUUID;
                         browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
                         browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
                     }
                 );
             } else {
-                let isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
-                let isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
+                const isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
+                const isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
                 if (!isUndoCloseOrRelatedTab && !isRecoveredTab) {
                     browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
                 }
@@ -121,7 +121,7 @@ function getNewIndex(currentWindow, currentTab) {
     }
 
     let lastPinnedTab = undefined;
-    for (let tab of currentWindow.tabs) {
+    for (const tab of currentWindow.tabs) {
         if (tab.pinned) {
             lastPinnedTab = tab;
         } else {
