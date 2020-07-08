@@ -101,9 +101,9 @@ function moveTab(newTab) {
                     }
                 );
             } else {
-                const isUndoCloseOrRelatedTab = newTab.index < currentWindow.tabs.length - 1;
+                const isUndoCloseTab = newTab.index < currentWindow.tabs.length - 1 && !newTab.openerTabId;
                 const isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
-                if (!isUndoCloseOrRelatedTab && !isRecoveredTab) {
+                if (!isUndoCloseTab && !isRecoveredTab) {
                     browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
                 }
             }
