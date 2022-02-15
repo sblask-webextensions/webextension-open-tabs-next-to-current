@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sblask/webextension-open-tabs-next-to-current.svg?branch=master)](https://travis-ci.org/sblask/webextension-open-tabs-next-to-current)
+[![Build Status](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/build.yml/badge.svg)](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/build.yml)
 
 Open Tabs Next To Current
 =========================
