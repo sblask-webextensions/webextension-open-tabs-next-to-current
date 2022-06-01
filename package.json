@@ -1,7 +1,7 @@
 {
     "author": "Sebastian Blask",
     "devDependencies": {
-        "eslint": "8.9.x",
+        "eslint": "8.16.x",
         "web-ext": "6.7.x"
     },
     "license": "MIT",
