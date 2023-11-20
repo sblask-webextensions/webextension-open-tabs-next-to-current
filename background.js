@@ -77,7 +77,7 @@ function fixListeners() {
 }
 
 function moveTab(newTab) {
-    browser.windows.getCurrent({ populate: true })
+    browser.windows.getCurrent({populate: true})
         .then(
             (currentWindow) => {
                 const tabIds = windowIdTabIdsMapping.get(currentWindow.id);

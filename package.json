@@ -1,8 +1,10 @@
 {
     "author": "Sebastian Blask",
     "devDependencies": {
-        "eslint": "8.9.x",
-        "web-ext": "6.7.x"
+        "@eslint/js": "^8.54.0",
+        "@stylistic/eslint-plugin-js": "^1.4.0",
+        "eslint": "^8.54.0",
+        "web-ext": "^7.8.0"
     },
     "license": "MIT",
     "name": "opentabsnexttocurrent",
@@ -26,9 +28,8 @@
         "readme": "cat README.md | sed -r 's/\\[.+\\]\\((.+)\\)/\\1/' | sed -r '/\\[/{ N; s/\\[.+\\]\\((.+)\\)/\\n\\1/ }' | sed -r '/```/,/```/d' | vim -",
         "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
         "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
-        "start:nightly": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
-        "test": "web-ext lint"
+        "start:nightly": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk"
     },
     "title": "Open Tabs Next to Current",
-    "version": "2.0.14"
+    "version": "2.0.13"
 }
