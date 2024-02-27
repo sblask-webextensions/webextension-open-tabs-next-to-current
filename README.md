@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/build.yml/badge.svg)](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/build.yml)
+[![pre-commit Status](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml)
 
 Open Tabs Next To Current
 =========================
