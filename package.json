@@ -10,7 +10,7 @@
     "name": "opentabsnexttocurrent",
     "repository": {
         "type": "git",
-        "url": "https://github.com/sblask/webextension-open-tabs-next-to-current"
+        "url": "https://github.com/sblask-webextensions/webextension-open-tabs-next-to-current"
     },
     "scripts": {
         "artifact-create:chrome": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg",
