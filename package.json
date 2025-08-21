@@ -4,7 +4,7 @@
         "@eslint/js": "8.54.0",
         "@stylistic/eslint-plugin-js": "1.4.0",
         "eslint": "8.54.0",
-        "web-ext": "7.8.0"
+        "web-ext": "7.12.0"
     },
     "license": "MIT",
     "name": "opentabsnexttocurrent",
