@@ -3,6 +3,21 @@
     "extends": [
         "config:recommended"
     ],
+    "packageRules": [
+        {
+            "automerge": true,
+            "automergeType": "branch",
+            "extends": [
+                "schedule:monthly"
+            ],
+            "groupName": "eslint",
+            "matchPackageNames": [
+                "@eslint/js",
+                "@stylistic/eslint-plugin",
+                "eslint"
+            ]
+        }
+    ],
     "pre-commit": {
         "enabled": true
     }
