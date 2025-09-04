@@ -29,7 +29,7 @@
         [
             "@semantic-release/exec",
             {
-                "publishCmd": "npx web-ext sign --channel unlisted --source-dir dist-firefox --artifacts-dir ."
+                "publishCmd": "npx web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir ."
             }
         ],
         [
@@ -45,7 +45,7 @@
                         "path": "*.xpi"
                     }
                 ],
-                "draftRelease": true,
+                "draftRelease": false,
                 "failCommentCondition": false,
                 "releasedLabels": false,
                 "successCommentCondition": "<% return issue.user.type !== 'Bot'; %>"
