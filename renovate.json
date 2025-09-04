@@ -7,6 +7,13 @@
         {
             "automerge": true,
             "automergeType": "branch",
+            "matchPackageNames": [
+                "actions/setup-python"
+            ]
+        },
+        {
+            "automerge": true,
+            "automergeType": "branch",
             "extends": [
                 "schedule:monthly"
             ],
