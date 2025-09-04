@@ -2,9 +2,12 @@
     "author": "Sebastian Blask",
     "devDependencies": {
         "@eslint/js": "9.33.0",
+        "@semantic-release/exec": "7.1.0",
         "@stylistic/eslint-plugin": "5.2.3",
         "eslint": "9.33.0",
         "globals": "16.3.0",
+        "semantic-release": "24.2.7",
+        "semantic-release-chrome": "3.2.0",
         "web-ext": "8.9.0"
     },
     "license": "MIT",
@@ -14,23 +17,10 @@
         "url": "https://github.com/sblask-webextensions/webextension-open-tabs-next-to-current"
     },
     "scripts": {
-        "artifact-create:chrome": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg",
-        "artifact-create:firefox": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg *.png browser-polyfill.js",
-        "artifact-rename:chrome": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-chrome.zip/\"  *$VERSION.zip",
-        "artifact-rename:firefox": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-firefox.zip/\" *$VERSION.zip",
-        "build": "git add --all; rm *.zip; npm run modify:chrome && npm run artifact-create:chrome && npm run artifact-rename:chrome && git checkout -- . && npm run modify:firefox && npm run artifact-create:firefox && npm run artifact-rename:firefox && git checkout -- .",
-        "help": "web-ext --help",
-        "icons": "for size in 16x16 32x32 48x48 64x64 128x128 440x280; do convert -background none -density 1000 -resize ${size} -extent ${size} -gravity center icon.svg icon-${size}.png; done",
-        "lint": "eslint --debug $(find . -not -path '*node_modules*' -name '*.js')",
-        "modify:chrome": "jq --indent 4 '. | del(.applications) | del(.browser_action.default_icon)' manifest.json | sponge manifest.json",
-        "modify:firefox": "npm run modify:manifest:firefox && npm run modify:remove-polyfill-references",
-        "modify:manifest:firefox": "jq --indent 4 '. | .background.scripts |= map(select(. != \"browser-polyfill.js\")) | if has(\"icons\") then .icons |= {\"48\": \"icon.svg\"} else . end | del(.options_ui.open_in_tab)' manifest.json | sponge manifest.json",
-        "modify:remove-polyfill-references": "sed --in-place --regexp-extended '/\"(\\.\\.\\/)?browser-polyfill.js\"/d' $(find . -not -path '*node_modules*' -name '*.js' -o -name '*.html')",
-        "readme": "cat README.md | sed -r 's/\\[.+\\]\\((.+)\\)/\\1/' | sed -r '/\\[/{ N; s/\\[.+\\]\\((.+)\\)/\\n\\1/ }' | sed -r '/```/,/```/d' | vim -",
-        "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
-        "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
-        "start:nightly": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk"
+        "chrome": "./bin/prepare-chrome.sh 0.0.0 && web-ext run --source-dir dist-chrome --target chromium",
+        "firefox": "./bin/prepare-firefox.sh 0.0.0 && web-ext run --source-dir dist-firefox --devtools",
+        "german": "./bin/prepare-firefox.sh 0.0.0 && web-ext run --source-dir dist-firefox --pref=general.useragent.locale=de-DE --pref=intl.locale.matchOS=false"
     },
     "title": "Open Tabs Next to Current",
-    "version": "2.0.13"
+    "version": "x.x.x"
 }

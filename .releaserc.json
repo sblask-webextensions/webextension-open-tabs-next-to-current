@@ -1,0 +1,56 @@
+{
+    "branches": [
+        "main"
+    ],
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "./bin/prepare-chrome.sh ${nextRelease.version}"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "./bin/prepare-firefox.sh ${nextRelease.version}"
+            }
+        ],
+        [
+            "semantic-release-chrome",
+            {
+                "asset": "open_tabs_next_to_current-${nextRelease.version}.zip",
+                "distFolder": "dist-chrome",
+                "extensionId": "gmpnnmonpnnmnhpdldahlekfofigiffh",
+                "target": "draft"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "publishCmd": "npx web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir ."
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "label": "Chrome Extension",
+                        "path": "*.zip"
+                    },
+                    {
+                        "label": "Firefox Add-on",
+                        "path": "*.xpi"
+                    }
+                ],
+                "draftRelease": false,
+                "failCommentCondition": false,
+                "releasedLabels": false,
+                "successCommentCondition": "<% return issue.user.type !== 'Bot'; %>"
+            }
+        ]
+    ],
+    "tagFormat": "${version}"
+}
