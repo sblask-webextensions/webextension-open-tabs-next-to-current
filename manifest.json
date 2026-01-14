@@ -1,16 +1,7 @@
 {
-    "applications": {
-        "gecko": {
-            "id": "opentabsnexttocurrent@sblask",
-            "strict_min_version": "57.0"
-        }
-    },
     "author": "Sebastian Blask",
     "background": {
-        "scripts": [
-            "browser-polyfill.js",
-            "background.js"
-        ]
+        "service_worker": "sw.js"
     },
     "commands": {
         "open-new-tab-at-default-location": {
@@ -30,10 +21,10 @@
         "48": "icon-48x48.png",
         "64": "icon-64x64.png"
     },
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Open Tabs Next to Current",
     "permissions": [
-        "sessions"
+        "tabs"
     ],
     "version": "2.0.14"
 }

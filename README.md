@@ -1,49 +1,39 @@
-[![pre-commit Status](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml)
+Open Tabs Next To Current (Chrome/Brave Port)
+==============================================
 
-Open Tabs Next To Current
-=========================
+A Chrome/Brave extension that opens new tabs next to the current tab instead of at the end.
 
-Open tabs that would normally be opened last next to the current one. Tabs that
-are being re-opened are thus not included.  You can use `Ctrl-Y`
-(`Ctrl-Shift-Y` on Windows) to open a new tab at the default location.
+This is a Manifest V3 port of [sblask's Firefox extension](https://github.com/sblask-webextensions/webextension-open-tabs-next-to-current).
 
-Note for Chrome
----------------
+Installation
+------------
 
-Keyboard shortcuts are not automatically set up. You need to do that manually
-on the extension page in settings.
+1. Clone or download this repo
+2. Go to `chrome://extensions/` (or `brave://extensions/`)
+3. Enable "Developer mode"
+4. Click "Load unpacked" and select the folder
 
-Note for Firefox
-----------------
+Usage
+-----
 
-After the addition of the `browser.tabs.insertAfterCurrent` setting in
-`about:config` you do not need this extension anymore.
+New tabs automatically open to the right of your current tab.
+
+Use `Ctrl-Y` (`Ctrl-Shift-Y` on Windows) to open a new tab at the default location (end of tab bar). Note: keyboard shortcuts may need to be set up manually in Chrome's extension settings.
 
 Known Issues
 ------------
 
-Caused by limitations of the webextension API, see
-[#26](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/26)
-and
-[#29](https://github.com/sblask/webextension-open-tabs-next-to-current/issues/29):
-
- - tabs are visibly moved to their final position
- - the tab bar is scrolled so the opened tab becomes the first visible one on
-   the left (Firefox only) - you can set `browser.tabs.tabMinWidth` in
-   `about:config` to something low like `20` so the tab bar is not scrollable
-   at all
- - when opening multiple tabs at once, only one of them is opened at the right
-   position
+- Tabs are visibly moved to their final position (API limitation)
+- When opening multiple tabs at once, only one may be positioned correctly
 
 Privacy Policy
 --------------
 
-This extension does not collect or send data of any kind to third parties.
+This extension does not collect or send any data. It only uses the `tabs` permission to track and reposition tabs.
 
-Feedback
---------
+Credits
+-------
 
-You can report bugs or make feature requests on
-[Github](https://github.com/sblask/webextension-open-tabs-next-to-current)
+Original extension by [Sebastian Blask](https://github.com/sblask-webextensions/webextension-open-tabs-next-to-current).
 
-Patches are welcome.
+Chrome/Brave port by [@pshrievedon](https://github.com/pshrievedon).
