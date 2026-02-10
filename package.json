@@ -5,7 +5,7 @@
         "@stylistic/eslint-plugin": "5.7.1",
         "eslint": "9.39.2",
         "globals": "17.3.0",
-        "web-ext": "9.2.0"
+        "web-ext": "9.3.0"
     },
     "license": "MIT",
     "name": "opentabsnexttocurrent",
