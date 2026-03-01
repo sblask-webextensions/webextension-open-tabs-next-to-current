@@ -13,7 +13,7 @@ repos:
           - "@eslint/js@10.0.1"
           - "@stylistic/eslint-plugin@5.9.0"
           - eslint@10.0.2
-          - globals@17.3.0
+          - globals@17.4.0
 
       - id: web-ext lint
         name: web-ext lint
