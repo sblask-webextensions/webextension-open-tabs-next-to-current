@@ -1,0 +1,26 @@
+name: Release Chrome Extension
+on:
+  workflow_dispatch:
+
+jobs:
+  release-chrome-extension:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: "0"
+
+      - uses: actions/setup-node@v7
+      - run: |
+          npm install
+          ./bin/prepare-chrome.sh ${{ github.ref_name }}
+
+      - run: echo "CHROME_EXTENSION_ID=$(cat CHROME_EXTENSION_ID)" >> "${GITHUB_ENV}"
+      - uses: mnao305/chrome-extension-upload@v6.0.0
+        with:
+          file-path: chrome.zip
+          extension-id: ${{ env.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
