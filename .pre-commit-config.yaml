@@ -5,25 +5,18 @@ repos:
 
       - id: eslint
         name: eslint
-        entry: eslint
-        language: node
+        entry: npx eslint --no-warn-ignored
+        language: system
         types_or:
           - javascript
-        additional_dependencies:
-          - "@eslint/js@10.0.1"
-          - "@stylistic/eslint-plugin@5.10.0"
-          - eslint@10.6.0
-          - globals@17.7.0
 
       - id: web-ext lint
         name: web-ext lint
-        entry: web-ext lint
-        language: node
+        entry: bash -c "./bin/prepare-chrome.sh 0.0.0 && ./bin/prepare-firefox.sh 0.0.0 && npx web-ext lint --source-dir dist-firefox/"
+        language: system
         types_or:
           - javascript
         pass_filenames: false
-        additional_dependencies:
-          - web-ext@10.5.0
 
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
