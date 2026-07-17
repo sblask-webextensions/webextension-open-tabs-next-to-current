@@ -16,7 +16,7 @@ jobs:
           npm install
           ./bin/prepare-firefox.sh ${{ github.ref_name }}
       - run: |
-          echo "npx web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir ."
+          npx web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir .
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}

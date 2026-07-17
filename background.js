@@ -1,8 +1,13 @@
+const STATE_STORAGE_KEY = "open-tabs-next-to-current-state";
 const TAB_SESSION_KEY = "open-tabs-next-to-current-tab-uuid";
 
 const windowIdTabIdsMapping = new Map();
 
-const knownTabIds = [];
+let knownTabIds = {};
+
+let skipNextCreatedTab = false;
+let statePromise = undefined;
+let stateQueue = Promise.resolve();
 
 function setCurrentTabId(windowId, tabId) {
     if (!windowIdTabIdsMapping.has(windowId)) {
@@ -11,26 +16,16 @@ function setCurrentTabId(windowId, tabId) {
     windowIdTabIdsMapping.get(windowId).unshift(tabId);
 }
 
-function initializeCurrentTabId() {
-    const query = {
-        active: true,
-        currentWindow: true,
-    };
-    browser.tabs.query(query).then(
-        ([tab]) => {
-            if (!tab) {
-                return;
-            }
-            setCurrentTabId(tab.windowId, tab.id);
-        }
-    );
+async function initializeCurrentTabId() {
+    const tabs = await browser.tabs.query({active: true});
+    for (const tab of tabs) {
+        setCurrentTabId(tab.windowId, tab.id);
+    }
 }
 
 function handleTabActivated(activeInfo) {
-    setCurrentTabId(activeInfo.windowId, activeInfo.tabId);
+    runWithState(() => setCurrentTabId(activeInfo.windowId, activeInfo.tabId));
 }
-
-initializeCurrentTabId();
 
 browser.tabs.onActivated.addListener(handleTabActivated);
 
@@ -39,95 +34,138 @@ browser.tabs.onRemoved.addListener(forgetTab);
 
 browser.commands.onCommand.addListener(function(command) {
     if (command == "open-new-tab-at-default-location") {
-        browser.tabs.onCreated.removeListener(moveTab);
-        browser.tabs.onCreated.addListener(fixListeners);
-        browser.tabs.create({});
+        runWithState(() => {
+            skipNextCreatedTab = true;
+            return browser.tabs.create({}).catch(error => {
+                skipNextCreatedTab = false;
+                throw error;
+            });
+        });
     }
 });
 
-if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
-    addSessionKeyToExistingTabs();
+function runWithState(givenFunction) {
+    stateQueue = stateQueue
+        .catch(() => undefined)
+        .then(ensureState)
+        .then(givenFunction)
+        .then(saveState);
+    stateQueue.catch(error => console.error(error));
 }
 
-function addSessionKeyToExistingTabs() {
-    browser.tabs.query({}).then(
-        allTabs => {
-            for (const existingTab of allTabs) {
-                browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY).then(
-                    (uuid) => {
-                        if (uuid) {
-                            if (knownTabIds.indexOf(uuid) === -1) {
-                                knownTabIds[existingTab.id] = uuid;
-                                return;
-                            }
-                        }
-                        const newUUID = uuidv4();
-                        knownTabIds[existingTab.id] = newUUID;
-                        browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, newUUID);
-                    }
-                );
-            }
+function ensureState() {
+    if (statePromise === undefined) {
+        statePromise = restoreState().catch(error => {
+            statePromise = undefined;
+            throw error;
+        });
+    }
+
+    return statePromise;
+}
+
+async function restoreState() {
+    const result = await browser.storage.session.get(STATE_STORAGE_KEY);
+    const state = result[STATE_STORAGE_KEY];
+    if (state) {
+        for (const [windowId, tabIds] of state.windowIdTabIdsMapping) {
+            windowIdTabIdsMapping.set(windowId, tabIds);
         }
+        knownTabIds = state.knownTabIds;
+        skipNextCreatedTab = state.skipNextCreatedTab || false;
+        return;
+    }
+
+    await initializeCurrentTabId();
+    if (supportsTabSessionValues()) {
+        await addSessionKeyToExistingTabs();
+    }
+}
+
+function saveState() {
+    return browser.storage.session.set({
+        [STATE_STORAGE_KEY]: {
+            windowIdTabIdsMapping: Array.from(windowIdTabIdsMapping.entries()),
+            knownTabIds: knownTabIds,
+            skipNextCreatedTab: skipNextCreatedTab,
+        },
+    });
+}
+
+function supportsTabSessionValues() {
+    return Boolean(
+        browser.sessions?.getTabValue &&
+        browser.sessions?.setTabValue
     );
 }
 
-function fixListeners() {
-    browser.tabs.onCreated.removeListener(fixListeners);
-    browser.tabs.onCreated.addListener(moveTab);
+async function addSessionKeyToExistingTabs() {
+    const allTabs = await browser.tabs.query({});
+    for (const existingTab of allTabs) {
+        const uuid = await browser.sessions.getTabValue(existingTab.id, TAB_SESSION_KEY);
+        if (uuid) {
+            if (Object.values(knownTabIds).indexOf(uuid) === -1) {
+                knownTabIds[existingTab.id] = uuid;
+                continue;
+            }
+        }
+        const newUUID = uuidv4();
+        knownTabIds[existingTab.id] = newUUID;
+        await browser.sessions.setTabValue(existingTab.id, TAB_SESSION_KEY, newUUID);
+    }
 }
 
 function moveTab(newTab) {
-    browser.windows.getCurrent({populate: true})
-        .then(
-            (currentWindow) => {
-                const tabIds = windowIdTabIdsMapping.get(currentWindow.id);
-                // handle tab being activated before being "created"
-                const currentTabId = tabIds[0] == newTab.id ? tabIds[1] : tabIds[0];
-                return Promise.all([
-                    currentWindow,
-                    browser.tabs.get(currentTabId),
-                ]);
-            }
-        )
-        .then(
-            ([currentWindow, currentTab]) => {
-                if (currentTab.windowId !== newTab.windowId) {
-                    // tab created by drag into window without focus change
-                    return;
-                }
+    runWithState(() => moveTabWithState(newTab));
+}
 
-                if (browser.sessions.getTabValue && browser.sessions.setTabValue) {
-                    browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY).then(
-                        (uuid) => {
-                            // restored and duplicated tabs have a uuid
-                            if (uuid) {
-                                // duplicated tabs' uuid will be in knownTabIds, so this is a restored tab
-                                if (knownTabIds.indexOf(uuid) === -1) {
-                                    knownTabIds[newTab.id] = uuid;
-                                    // tab position should be correct
-                                    return;
-                                }
-                            }
-                            // new or duplicated tabs need to be moved
-                            const newUUID = uuidv4();
-                            knownTabIds[newTab.id] = newUUID;
-                            browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
-                            browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
-                        }
-                    );
-                } else {
-                    const isUndoCloseTab = newTab.index < currentWindow.tabs.length - 1 && !newTab.openerTabId;
-                    const isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
-                    if (!isUndoCloseTab && !isRecoveredTab) {
-                        browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
-                    }
-                }
+async function moveTabWithState(newTab) {
+    if (skipNextCreatedTab) {
+        skipNextCreatedTab = false;
+        return;
+    }
+
+    const currentWindow = await browser.windows.get(newTab.windowId, {populate: true});
+    const tabIds = windowIdTabIdsMapping.get(currentWindow.id) || [];
+    // handle tab being activated before being "created"
+    const currentTabId = tabIds[0] == newTab.id ? tabIds[1] : tabIds[0];
+    if (currentTabId === undefined) {
+        return;
+    }
+
+    const currentTab = await browser.tabs.get(currentTabId);
+    if (currentTab.windowId !== newTab.windowId) {
+        // tab created by drag into window without focus change
+        return;
+    }
+
+    if (supportsTabSessionValues()) {
+        const uuid = await browser.sessions.getTabValue(newTab.id, TAB_SESSION_KEY);
+        // restored and duplicated tabs have a uuid
+        if (uuid) {
+            // duplicated tabs' uuid will be in knownTabIds, so this is a restored tab
+            if (Object.values(knownTabIds).indexOf(uuid) === -1) {
+                knownTabIds[newTab.id] = uuid;
+                // tab position should be correct
+                return;
             }
-        );
+        }
+        // new or duplicated tabs need to be moved
+        const newUUID = uuidv4();
+        knownTabIds[newTab.id] = newUUID;
+        await browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
+        await browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+    } else {
+        const isUndoCloseTab = newTab.index < currentWindow.tabs.length - 1 && !newTab.openerTabId;
+        const isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
+        if (!isUndoCloseTab && !isRecoveredTab) {
+            await browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+        }
+    }
 }
 
 function forgetTab(tabId) {
-    delete knownTabIds[tabId];
+    runWithState(() => delete knownTabIds[tabId]);
 }
 
 function getNewIndex(currentWindow, currentTab) {

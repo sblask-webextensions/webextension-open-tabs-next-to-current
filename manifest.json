@@ -2,12 +2,17 @@
     "author": "Sebastian Blask",
     "background": {
         "scripts": [
-            "browser-polyfill.js",
             "background.js"
-        ]
+        ],
+        "service_worker": "background.js"
     },
     "browser_specific_settings": {
         "gecko": {
+            "data_collection_permissions": {
+                "required": [
+                    "none"
+                ]
+            },
             "id": "opentabsnexttocurrent@sblask"
         }
     },
@@ -29,10 +34,12 @@
         "64": "icon-64x64.png",
         "128": "icon-128x128.png"
     },
-    "manifest_version": 2,
+    "manifest_version": 3,
+    "minimum_chrome_version": "148",
     "name": "Open Tabs Next to Current",
     "permissions": [
-        "sessions"
+        "sessions",
+        "storage"
     ],
     "version": "x.x.x"
 }

@@ -4,9 +4,7 @@ const stylistic = require("@stylistic/eslint-plugin");
 
 module.exports = [
     {
-        ignores: [
-            "browser-polyfill.js",
-        ],
+        ignores: [],
     },
     {
         languageOptions: {

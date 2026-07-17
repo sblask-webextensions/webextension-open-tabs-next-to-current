@@ -15,7 +15,7 @@ VERSION=$1
 
 cp "${ROOT_DIRECTORY}"/LICENSE "${DIST_DIRECTORY}"
 
-jq --indent 4 ". | .version |= \"${VERSION}\" | del(.browser_specific_settings) | del(.browser_action.default_icon)" "${ROOT_DIRECTORY}"/manifest.json > "${DIST_DIRECTORY}"/manifest.json
+jq --indent 4 ". | .version |= \"${VERSION}\" | del(.browser_specific_settings) | del(.browser_action.default_icon) | del(.background.scripts) | .permissions -= [\"sessions\"]" "${ROOT_DIRECTORY}"/manifest.json > "${DIST_DIRECTORY}"/manifest.json
 
 # copy files
 cp "${ROOT_DIRECTORY}"/icons/*.{png,svg} "${DIST_DIRECTORY}"
