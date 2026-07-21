@@ -1,9 +1,10 @@
 name: Tag
+
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  tag:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -13,8 +14,15 @@ jobs:
         with:
           fetch-depth: "0"
 
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ secrets.SBLASK_WEBEXTENSIONS_PUSH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SBLASK_WEBEXTENSIONS_PUSH_APP_PRIVATE_KEY }}
+
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # use app token so that push can trigger other workflows
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           DEFAULT_BUMP: patch
