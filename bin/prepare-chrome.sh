@@ -32,5 +32,15 @@ fi
 cp "${ROOT_DIRECTORY}"/*.js "${DIST_DIRECTORY}"/
 rm "${DIST_DIRECTORY}"/eslint.config.js
 
+# create zip
+name="$(jq -r '.name' manifest.json |
+  tr '[:upper:]' '[:lower:]' |
+  sed -E '
+    s/[^a-z0-9]+/_/g
+    s/^_+//
+    s/_+$//
+    s/_+/_/g
+  '
+)"
 cd "${DIST_DIRECTORY}"
-zip -r ../chrome.zip .
+zip -r ../"${name}-${VERSION}-chrome.zip" .

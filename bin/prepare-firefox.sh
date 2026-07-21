@@ -35,5 +35,15 @@ rm "${DIST_DIRECTORY}"/eslint.config.js
 # shellcheck disable=2046
 sed --in-place --regexp-extended 's|// firefox-only: ||' $(find "${DIST_DIRECTORY}" -name '*.js' -o -name '*.html')
 
+# create zip
+name="$(jq -r '.name' manifest.json |
+  tr '[:upper:]' '[:lower:]' |
+  sed -E '
+    s/[^a-z0-9]+/_/g
+    s/^_+//
+    s/_+$//
+    s/_+/_/g
+  '
+)"
 cd "${DIST_DIRECTORY}"
-zip -r ../firefox.zip .
+zip -r ../"${name}-${VERSION}-firefox.zip" .
