@@ -9,6 +9,14 @@ let skipNextCreatedTab = false;
 let statePromise = undefined;
 let stateQueue = Promise.resolve();
 
+
+async function getBrowserInfo() {
+    if (!browser.runtime.getBrowserInfo) {
+        return {};
+    }
+    return await browser.runtime.getBrowserInfo();
+}
+
 function setCurrentTabId(windowId, tabId) {
     if (!windowIdTabIdsMapping.has(windowId)) {
         windowIdTabIdsMapping.set(windowId, []);
@@ -154,13 +162,30 @@ async function moveTabWithState(newTab) {
         const newUUID = uuidv4();
         knownTabIds[newTab.id] = newUUID;
         await browser.sessions.setTabValue(newTab.id, TAB_SESSION_KEY, newUUID);
-        await browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
     } else {
         const isUndoCloseTab = newTab.index < currentWindow.tabs.length - 1 && !newTab.openerTabId;
         const isRecoveredTab = newTab.index > currentWindow.tabs.length - 1;
-        if (!isUndoCloseTab && !isRecoveredTab) {
-            await browser.tabs.move(newTab.id, {index: getNewIndex(currentWindow, currentTab)});
+        if (isUndoCloseTab || isRecoveredTab) {
+            return;
         }
+    }
+
+
+    // if the current tab is part of a group, the new one should be too
+    if (browser.tabs.group && currentTab.groupId != -1) {
+        await browser.tabs.group({groupId: currentTab.groupId, tabIds: newTab.id});
+    }
+
+    if (currentTab.pinned) {
+        await browser.tabs.move(newTab.id, {index: getLastPinnedTab(currentWindow).index + 1});
+    } else {
+        await browser.tabs.move(newTab.id, {index: currentTab.index + 1});
+    }
+
+    // workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=2023314
+    const browserInfo = await getBrowserInfo();
+    if (browserInfo.name == "Firefox" && browser.tabs.ungroup && currentTab.groupId == -1) {
+        await browser.tabs.ungroup(newTab.id);
     }
 }
 
@@ -168,18 +193,13 @@ function forgetTab(tabId) {
     runWithState(() => delete knownTabIds[tabId]);
 }
 
-function getNewIndex(currentWindow, currentTab) {
-    if (!currentTab.pinned) {
-        return currentTab.index + 1;
-    }
-
+function getLastPinnedTab(currentWindow) {
     let lastPinnedTab = undefined;
     for (const tab of currentWindow.tabs) {
-        if (tab.pinned) {
-            lastPinnedTab = tab;
-        } else {
-            return lastPinnedTab.index + 1;
+        if (!tab.pinned) {
+            return lastPinnedTab;
         }
+        lastPinnedTab = tab;
     }
 }
 
