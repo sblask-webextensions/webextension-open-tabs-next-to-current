@@ -16,7 +16,7 @@ module.exports = [
                 ...globals.webextensions,
             },
             parserOptions: {
-                ecmaVersion: 2020,
+                ecmaVersion: 2024,
             },
         },
         plugins: {
@@ -27,6 +27,10 @@ module.exports = [
             "no-restricted-syntax": [
                 "error",
                 "ForInStatement",
+                {
+                    selector: "AwaitExpression:not(:function AwaitExpression)",
+                    message: "Top-level await is disallowed in service workers.",
+                },
             ],
             "no-unused-vars": [
                 "error",
