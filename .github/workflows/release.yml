@@ -90,8 +90,10 @@ jobs:
           fetch-depth: "0"
 
       - uses: actions/download-artifact@v8
+        with:
+          merge-multiple: true
 
       - run: |
-          gh release create "$TAG" chrome/*.zip firefox/*.xpi
+          gh release create "$TAG" ./*.zip ./*.xpi
         env:
           GH_TOKEN: ${{ github.token }}
