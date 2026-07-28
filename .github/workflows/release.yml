@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v7
       - run: |
           npm install
-          ./bin/prepare-firefox.sh ${{ github.ref_name }}
+          ./bin/prepare-firefox.sh "${TAG}"
       - run: |
           npx web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir .
           files=(*.xpi)
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-node@v7
       - run: |
           npm install
-          ./bin/prepare-chrome.sh ${{ github.ref_name }}
+          ./bin/prepare-chrome.sh "${TAG}"
       - run: echo "CHROME_EXTENSION_ID=$(cat CHROME_EXTENSION_ID)" >> "${GITHUB_ENV}"
       - uses: mnao305/chrome-extension-upload@v6.0.0
         with:
