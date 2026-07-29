@@ -19,5 +19,6 @@
         "german": "./bin/prepare-firefox.sh 0.0.0 && web-ext run --source-dir dist-firefox --pref=general.useragent.locale=de-DE --pref=intl.locale.matchOS=false"
     },
     "title": "Open Tabs Next to Current",
+    "type": "module",
     "version": "x.x.x"
 }
