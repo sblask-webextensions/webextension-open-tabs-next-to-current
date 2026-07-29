@@ -27,3 +27,4 @@ repos:
     rev: 3.6.1
     hooks:
       - id: editorconfig-checker
+        exclude: \.fodg$
