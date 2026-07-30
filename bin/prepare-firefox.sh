@@ -56,7 +56,17 @@ find "${ROOT_DIRECTORY}" \
     -exec sed --in-place --regexp-extended 's|// firefox-only: ||' {} +
 
 # create zip
-name="$(jq -r '.name' "${ROOT_DIRECTORY}/manifest.json" |
+name_from_manifest="$(jq --raw-output '.name' "${ROOT_DIRECTORY}/manifest.json")"
+if [[ "${name_from_manifest}" == "__MSG_extensionName__" ]]; then
+  if [[ -f "${ROOT_DIRECTORY}/_locales/en/messages.json" ]]; then
+    name="$(jq --raw-output '.extensionName.message' "${ROOT_DIRECTORY}/_locales/en/messages.json")"
+  else
+    name="webextension"
+  fi
+else
+  name="${name_from_manifest}"
+fi
+name="$(printf '%s' "${name}" |
   tr '[:upper:]' '[:lower:]' |
   sed -E '
     s/[^a-z0-9]+/_/g
