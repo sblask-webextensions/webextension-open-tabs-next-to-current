@@ -8,3 +8,6 @@ trim_trailing_whitespace = true
 
 [{*.js,*.json}]
 indent_size = 4
+
+[*.sh]
+indent_size = 2

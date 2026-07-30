@@ -2,10 +2,15 @@
 
 set -o errexit -o nounset -o pipefail -o xtrace
 
-SCRIPT_DIRECTORY=$(dirname "${BASH_SOURCE:-$0}" | xargs realpath)
+if (( $# != 1 )); then
+  echo "Usage: $0 VERSION" >&2
+  exit 64
+fi
+
+SCRIPT_DIRECTORY=$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 declare -r SCRIPT_DIRECTORY
 
-ROOT_DIRECTORY=$(realpath "${SCRIPT_DIRECTORY}"/..)
+ROOT_DIRECTORY=$(cd -- "${SCRIPT_DIRECTORY}/.." &>/dev/null && pwd)
 DIST_DIRECTORY="${ROOT_DIRECTORY}/dist-chrome"
 
 rm -rf "${DIST_DIRECTORY}"
@@ -15,28 +20,43 @@ VERSION=$1
 
 cp "${ROOT_DIRECTORY}"/LICENSE "${DIST_DIRECTORY}"
 
-jq --indent 4 ". | .version |= \"${VERSION}\" | del(.browser_specific_settings) | del(.action.default_icon) | del(.background.scripts) | .permissions -= [\"sessions\"]" "${ROOT_DIRECTORY}"/manifest.json > "${DIST_DIRECTORY}"/manifest.json
+jq \
+  --arg version "${VERSION}" \
+  --indent 4 \
+  '
+    .version = $version
+    | del(
+      .background.scripts,
+      .browser_specific_settings
+    )
+    | .permissions -= ["sessions"]
+  ' \
+  "${ROOT_DIRECTORY}/manifest.json" \
+  > "${DIST_DIRECTORY}/manifest.json"
 
 # copy files
 cp "${ROOT_DIRECTORY}"/icons/*.{png,svg} "${DIST_DIRECTORY}"
 
-if [ -d "${ROOT_DIRECTORY}"/_locales ]; then
-  cp -r "${ROOT_DIRECTORY}"/_locales "${DIST_DIRECTORY}"/_locales
-fi
-if [ -d "${ROOT_DIRECTORY}"/content-scripts ]; then
-  cp -r "${ROOT_DIRECTORY}"/content-scripts "${DIST_DIRECTORY}"/content-scripts
-fi
-if [ -d "${ROOT_DIRECTORY}"/options ]; then
-  cp -r "${ROOT_DIRECTORY}"/options "${DIST_DIRECTORY}"/options
-fi
-cp "${ROOT_DIRECTORY}"/*.js "${DIST_DIRECTORY}"/
-rm "${DIST_DIRECTORY}"/eslint.config.js
+for directory in _locales content-scripts options; do
+  if [ -d "${ROOT_DIRECTORY}/${directory}" ]; then
+    cp -r "${ROOT_DIRECTORY}/${directory}" "${DIST_DIRECTORY}/${directory}"
+  fi
+done
 
-# shellcheck disable=2046
-sed --in-place --regexp-extended 's|// chrome-only: ||' $(find "${DIST_DIRECTORY}" -name '*.js' -o -name '*.html')
+find "${ROOT_DIRECTORY}" \
+  -maxdepth 1 \
+  -type f \
+  -name '*.js' \
+  ! -name 'eslint.config.js' \
+  -exec cp {} "${DIST_DIRECTORY}" \;
+
+  find "${DIST_DIRECTORY}" \
+    -type f \
+    \( -name '*.js' -o -name '*.html' \) \
+    -exec sed --in-place --regexp-extended 's|// chrome-only: ||' {} +
 
 # create zip
-name="$(jq -r '.name' manifest.json |
+name="$(jq -r '.name' "${ROOT_DIRECTORY}/manifest.json" |
   tr '[:upper:]' '[:lower:]' |
   sed -E '
     s/[^a-z0-9]+/_/g
@@ -45,5 +65,7 @@ name="$(jq -r '.name' manifest.json |
     s/_+/_/g
   '
 )"
-cd "${DIST_DIRECTORY}"
-zip -r ../"${name}-${VERSION}-chrome.zip" .
+archive_path="${ROOT_DIRECTORY}/${name}-${VERSION}-chrome.zip"
+rm -f "${archive_path}"
+
+(cd "${DIST_DIRECTORY}" && zip -r "${archive_path}" .)

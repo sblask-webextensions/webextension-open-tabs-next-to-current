@@ -10,12 +10,16 @@ repos:
         types_or:
           - javascript
 
+      - id: prepare-chrome check
+        name: Check prepare-chrome script works
+        entry: bash -c "./bin/prepare-chrome.sh 0.0.0"
+        language: system
+        pass_filenames: false
+
       - id: web-ext lint
         name: web-ext lint
-        entry: bash -c "./bin/prepare-chrome.sh 0.0.0 && ./bin/prepare-firefox.sh 0.0.0 && npx web-ext lint --source-dir dist-firefox/"
+        entry: bash -c "./bin/prepare-firefox.sh 0.0.0 && npx web-ext lint --source-dir dist-firefox/"
         language: system
-        types_or:
-          - javascript
         pass_filenames: false
 
   - repo: https://github.com/rhysd/actionlint
