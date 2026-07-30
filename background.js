@@ -9,7 +9,6 @@ let skipNextCreatedTab = false;
 let statePromise = undefined;
 let stateQueue = Promise.resolve();
 
-
 async function getBrowserInfo() {
     if (!browser.runtime.getBrowserInfo) {
         return {};
@@ -44,7 +43,7 @@ browser.commands.onCommand.addListener(function(command) {
     if (command == "open-new-tab-at-default-location") {
         runWithState(() => {
             skipNextCreatedTab = true;
-            return browser.tabs.create({}).catch(error => {
+            return browser.tabs.create({}).catch((error) => {
                 skipNextCreatedTab = false;
                 throw error;
             });
@@ -58,12 +57,12 @@ function runWithState(givenFunction) {
         .then(ensureState)
         .then(givenFunction)
         .then(saveState);
-    stateQueue.catch(error => console.error(error));
+    stateQueue.catch((error) => console.error(error));
 }
 
 function ensureState() {
     if (statePromise === undefined) {
-        statePromise = restoreState().catch(error => {
+        statePromise = restoreState().catch((error) => {
             statePromise = undefined;
             throw error;
         });
@@ -101,10 +100,7 @@ function saveState() {
 }
 
 function supportsTabSessionValues() {
-    return Boolean(
-        browser.sessions?.getTabValue &&
-        browser.sessions?.setTabValue
-    );
+    return Boolean(browser.sessions?.getTabValue && browser.sessions?.setTabValue);
 }
 
 async function addSessionKeyToExistingTabs() {
@@ -170,7 +166,6 @@ async function moveTabWithState(newTab) {
         }
     }
 
-
     // if the current tab is part of a group, the new one should be too
     if (browser.tabs.group && currentTab.groupId != -1) {
         await browser.tabs.group({groupId: currentTab.groupId, tabIds: newTab.id});
@@ -205,7 +200,7 @@ function getLastPinnedTab(currentWindow) {
 
 function uuidv4() {
     // see https://stackoverflow.com/a/2117523/520061
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, (c) =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 }

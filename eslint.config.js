@@ -8,6 +8,7 @@ export default [
             "dist-*/",
         ],
     },
+    stylistic.configs.recommended,
     {
         languageOptions: {
             globals: {
@@ -20,10 +21,7 @@ export default [
                 ecmaVersion: 2024,
             },
         },
-        plugins: {
-            stylistic: stylistic,
-        },
-        rules:{
+        rules: {
             ...js.configs.recommended.rules,
             "no-restricted-syntax": [
                 "error",
@@ -36,58 +34,104 @@ export default [
             "no-unused-vars": [
                 "error",
                 {
-                    "args": "all",
-                    "argsIgnorePattern": "^_[^_]",
-                    "caughtErrorsIgnorePattern": "^_[^_]",
-                    "varsIgnorePattern": "^_[^_]",
+                    args: "all",
+                    argsIgnorePattern: "^_[^_]",
+                    caughtErrorsIgnorePattern: "^_[^_]",
+                    varsIgnorePattern: "^_[^_]",
                 },
             ],
             "no-var": "error",
             "prefer-const": "error",
-            "stylistic/array-bracket-newline": [
+            "@stylistic/array-bracket-newline": [
                 "error",
                 "consistent",
             ],
-            "stylistic/array-bracket-spacing": [
-                "error",
-                "never",
-            ],
-            "stylistic/comma-dangle": [
-                "error",
-                {
-                    "arrays": "always-multiline",
-                    "exports": "always-multiline",
-                    "functions": "only-multiline",
-                    "imports": "always-multiline",
-                    "objects": "always-multiline",
-                },
-            ],
-            "stylistic/indent": [
-                "error",
-                4,
-                {
-                    "SwitchCase": 1,
-                },
-            ],
-            "stylistic/linebreak-style": [
-                "error",
-                "unix",
-            ],
-            "stylistic/no-console": [
-                "off",
-            ],
-            "stylistic/object-curly-spacing": [
-                "error",
-                "never",
-            ],
-            "stylistic/quotes": [
-                "error",
-                "double",
-            ],
-            "stylistic/semi": [
+            "@stylistic/arrow-parens": [
                 "error",
                 "always",
             ],
+            "@stylistic/brace-style": [
+                "error",
+                "1tbs",
+                {
+                    allowSingleLine: true,
+                },
+            ],
+            "@stylistic/comma-dangle": [
+                "error",
+                {
+                    arrays: "always-multiline",
+                    exports: "always-multiline",
+                    functions: "only-multiline",
+                    imports: "always-multiline",
+                    objects: "always-multiline",
+                },
+            ],
+            "@stylistic/indent": [
+                "error",
+                4,
+                {
+                    SwitchCase: 1,
+                },
+            ],
+            "@stylistic/indent-binary-ops": [
+                "error",
+                4,
+            ],
+            "@stylistic/key-spacing": [
+                "error",
+                {
+                    mode: "minimum",
+                },
+            ],
+            "@stylistic/linebreak-style": [
+                "error",
+                "unix",
+            ],
+            "@stylistic/max-statements-per-line": [
+                "error",
+                {
+                    max: 2,
+                },
+            ],
+            "@stylistic/no-mixed-operators": [
+                "off",
+            ],
+            "@stylistic/no-multi-spaces": [
+                "error",
+                {
+                    exceptions: {
+                        ArrowFunctionExpression: true,
+                        BinaryExpression: true,
+                        Property: true,
+                        VariableDeclarator: true,
+                    },
+                },
+            ],
+            "@stylistic/object-curly-spacing": [
+                "error",
+                "never",
+            ],
+            "@stylistic/quotes": [
+                "error",
+                "double",
+                {
+                    allowTemplateLiterals: "always",
+                },
+            ],
+            "@stylistic/semi": [
+                "error",
+                "always",
+            ],
+            "@stylistic/space-before-function-paren": [
+                "error",
+                {
+                    anonymous: "never",
+                    asyncArrow: "always",
+                    named: "never",
+                },
+            ],
+            "@stylistic/space-infix-ops": "off",
         },
     },
 ];

@@ -4,11 +4,11 @@ repos:
     hooks:
 
       - id: eslint
-        name: eslint
-        entry: npx eslint --no-warn-ignored
+        name: Run eslint including stylistic
+        entry: npx eslint --no-warn-ignored --max-warnings=0
         language: system
-        types_or:
-          - javascript
+        always_run: true
+        pass_filenames: false
 
       - id: prepare-chrome check
         name: Check prepare-chrome script works
