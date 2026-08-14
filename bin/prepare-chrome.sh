@@ -26,6 +26,7 @@ jq \
   '
     .version = $version
     | del(
+      .action.default_icon,
       .background.scripts,
       .browser_specific_settings
     )
