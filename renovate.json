@@ -3,14 +3,14 @@
     "extends": [
         "config:recommended"
     ],
+    "minimumReleaseAge": "1 week",
     "packageRules": [
         {
             "automerge": true,
             "automergeType": "branch",
             "groupName": "actions",
             "matchPackageNames": [
-                "actions/checkout",
-                "actions/setup-python"
+                "actions/*"
             ]
         },
         {
@@ -24,6 +24,27 @@
                 "@eslint/js",
                 "@stylistic/eslint-plugin",
                 "eslint"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ]
+        },
+        {
+            "automerge": true,
+            "automergeType": "branch",
+            "extends": [
+                "schedule:monthly"
+            ],
+            "matchPackageNames": [
+                "editorconfig-checker/editorconfig-checker.python",
+                "globals",
+                "rhysd/actionlint",
+                "web-ext"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
             ]
         }
     ],
