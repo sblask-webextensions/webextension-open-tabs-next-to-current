@@ -1,4 +1,6 @@
 [![pre-commit Status](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/sblask/webextension-open-tabs-next-to-current/actions/workflows/pre-commit.yml)
+[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/gmpnnmonpnnmnhpdldahlekfofigiffh?color=db4437)](https://chromewebstore.google.com/detail/open-tabs-next-to-current/gmpnnmonpnnmnhpdldahlekfofigiffh)
+[![Mozilla Add-on Version](https://img.shields.io/amo/v/open-tabs-next-to-current?color=ff7139)](https://addons.mozilla.org/firefox/addon/open-tabs-next-to-current/)
 
 Open Tabs Next To Current
 =========================
